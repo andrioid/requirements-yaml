@@ -1,7 +1,7 @@
 ---
 name: requirements-yaml
 description: Author, edit, and review a project's requirements.yaml in the compact requirements-yaml format — one line per requirement, grouped into functional / non_functional / deferred plus optional domain sections and a docs map of supporting references. Use when creating or maintaining a requirements.yaml, adding or revising requirements, or checking that a requirements file follows the format.
-version: 0.2.0
+version: 0.3.0
 ---
 
 # requirements-yaml
@@ -50,16 +50,13 @@ docs:                           # optional; kept last — filename -> when to re
 - `functional` + `non_functional` are core; `deferred` and `docs` are optional.
 - A project may add top-level **domain sections** — same `group → {ID: line}`
   shape as `non_functional` (e.g. a public/private data boundary).
-- Group keys are `snake_case`. Under `functional`, group by area, then by a role
-  heading `As a <role>, I can:`.
-- Order is presentational (nothing enforces it); by convention put the optional
-  `docs` block last, at the end of the file.
+- Order is presentational; by convention the optional `docs` block comes last.
 
 ## Supporting documents
 
-The optional top-level `docs` section is a reading list: it maps each supporting
-document — a ubiquitous-language glossary, a domain model, an ADR log, an API
-contract — to a note on what it is and, crucially, when to read it.
+The optional `docs` map is a reading list — each supporting document (glossary,
+domain model, ADR log, API contract) mapped to what it is and, crucially, *when
+to read it*, so a reader or agent knows which file to open before a given change:
 
 ```yaml
 docs:
@@ -67,19 +64,39 @@ docs:
   docs/domain-model.md: aggregates, entities, and invariants — read before adding or changing a functional area.
 ```
 
-- The key is the document's **filename** — a repo-relative path or a URL.
-- The value is a short **description** that names the document and states **when
-  it should be read**, so a reader or agent knows which file to open before a
-  given kind of change.
-- `docs` is optional and, when present, sits at the **bottom** of the file.
-- `docs` holds pointers, not requirements — no IDs, no `so that` / `verified
-  when` clauses.
+Keys are filenames (a repo-relative path or URL); values are pointers, not
+requirements — no IDs, no clauses.
 
 ## IDs
 
 `PREFIX-NN`, uppercase and zero-padded (`ACC-01`). Stable forever — never
 renumber or reuse. Prefixes are per-project; infer them from the IDs already in
 the file. Deferred IDs are quoted and prefixed: `"[deferred] PAY-01"`.
+
+## Traceability
+
+IDs are the join key between a requirement and everything that satisfies it, and
+those links live **outside** this file — `requirements.yaml` stays status-free.
+
+- Cite the ID in the test that proves the `verified when`, and in the commit or
+  PR that implements the capability.
+- `git grep <ID>` (or a search across tests) then shows what covers a
+  requirement; an ID with no hits is unimplemented or unverified.
+
+## Provisional clauses
+
+A clause you cannot yet stand behind — most often `so that`, whose rationale is
+rarely recoverable from code — is marked `[?]` right after the clause keyword and
+left for a human to confirm:
+
+```
+BIL-01: charge a saved card on renewal; so that [?] subscriptions continue without re-entry; verified when a due invoice captures against the stored token.
+```
+
+- `[?]` reads as "assumed — confirm with a human"; it sits inside the value, so
+  no quoting is triggered.
+- Expected while **discovering** requirements from an existing codebase; a
+  settled, hand-authored file has none left.
 
 ## Per-project vocabulary
 
@@ -106,13 +123,25 @@ Authoring rules and review are one list. To review, check each and report
 - `docs` is optional; when present it is the last section, and each entry is
   `<filename>: <description>` whose description says what the document is and when
   to read it — not a requirement.
+- `[?]` marks an assumed clause pending confirmation; a settled file has none
+  left.
 - A value is quoted only when it contains `: ` or starts with a YAML indicator.
+
+## Companion skills
+
+Build on this format; each depends on it:
+
+- **requirements-implement** — build a change from a requirement: turn its
+  `verified when` into a test, implement, and cite the ID.
+- **requirements-discover** — reverse-engineer a `requirements.yaml` from an
+  existing codebase.
 
 ## Scaffolding
 
 - `requirements.template.yaml` — a ready-to-copy starter; keep its header.
-- `requirements.schema.json` — optional editor aid (autocomplete + hover).
-  Structural only; it enforces no grammar.
+- `requirements.schema.json` — optional editor aid (autocomplete + hover). It
+  mirrors the structural shape (key and ID patterns, nesting); this skill stays
+  authoritative for grammar and conventions.
 
 ## Versioning
 
