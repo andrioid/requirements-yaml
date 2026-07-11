@@ -1,41 +1,34 @@
 # requirements-yaml
 
-A compact, human-editable, LLM-verifiable format for describing a project's
-requirements in a single `requirements.yaml`.
-
-It is a **convention, not a tool.** Nothing enforces it at build time. The point
-is a shape that a person can edit and grasp at a glance, and that an LLM can
-loosely verify against a short project vocabulary.
-
-## What a requirement looks like
+A compact, hand-editable format for a project's requirements. One file, one line
+per requirement.
 
 ```yaml
 functional:
   accounts:
     As a user, I can:
-      ACC-01: "reset my password from a signed email link — so that a lost password is recoverable without support — acceptance: a used or expired link is rejected and a fresh link succeeds."
+      ACC-01: reset my password from a signed email link | so that a lost password is recoverable without support | verified when a used or expired link is rejected and a fresh one works.
 ```
 
-Each requirement is one line: **capability — so that value — acceptance:
-observable proof.** IDs are stable (`ACC-01`) so plans, tests, and commits can
-reference them.
+- **`capability | so that value | verified when observable proof.`** — the whole
+  requirement on one line.
+- IDs (`ACC-01`) are stable, so plans, tests, and commits can reference them.
+- Grouped into `functional`, `non_functional`, optional `deferred`, plus any
+  project-specific domain sections.
+- Quotes are optional — add them only if a clause contains `: ` or the value
+  starts with a YAML symbol.
 
-## Files here
+## Start
 
-| File | Purpose |
-| ---- | ------- |
-| [`FORMAT.md`](./FORMAT.md) | The canonical, domain-neutral spec. Read once as a human; load it for LLM verification. |
-| [`requirements.schema.json`](./requirements.schema.json) | Optional loose JSON Schema for editor autocomplete and hover. Structural only, not a gate. |
-| [`requirements.template.yaml`](./requirements.template.yaml) | Empty skeleton with one example per section. |
-| [`requirements.vocab.template.md`](./requirements.vocab.template.md) | Template for a project's own ID prefixes, roles, domain sections, and rules. |
+1. Copy `requirements.template.yaml` into your repo as `requirements.yaml`; edit
+   the header and examples.
+2. (Optional) vendor `requirements.schema.json` for editor autocomplete — the
+   template header already points at it.
+3. Install the skill so your agent knows the format:
+   ```
+   npx skills add <owner>/requirements-yaml
+   ```
+4. To review a file, ask your agent (which now has the skill) to check it against
+   the format.
 
-## Using it in a project
-
-1. Copy `requirements.template.yaml` to your repo as `requirements.yaml`.
-2. Copy `requirements.vocab.template.md` to `requirements.vocab.md` and fill in
-   your prefixes, roles, domain sections, and domain rules.
-3. Point editors at the schema with the header line the template already has:
-   `# yaml-language-server: $schema=./requirements.schema.json` (vendor a copy of
-   `requirements.schema.json`, or reference it by URL).
-4. To verify, hand an LLM `FORMAT.md` + your `requirements.vocab.md` + your
-   `requirements.yaml` and ask it to run the checklist at the end of `FORMAT.md`.
+The full rules live in the skill, `SKILL.md`.
