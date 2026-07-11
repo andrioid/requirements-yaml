@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://requirements-yaml.example/requirements.schema.json",
+  "title": "Compact requirements document",
+  "description": "Editor aid for requirements.yaml: a compact, human-editable requirements format grouped into functional areas, non-functional qualities, deferred scope, and optional project domain sections. Structural only — this schema is not a build gate; see FORMAT.md.",
+  "markdownDescription": "Compact requirements. Group by `functional.<system_area>.As a <role>, I can.<ID>`, `non_functional.<quality>.<ID>`, or a project domain section. Each requirement value reads `<capability> — so that <value> — acceptance: <observable proof>.` Full spec and per-project vocabulary: **FORMAT.md** and **requirements.vocab.md**.",
+  "x-authoring": {
+    "purpose": "Let a human edit quickly and an LLM loosely verify. Nothing here is enforced at build time.",
+    "format": {
+      "functional": "functional.<snake_case_area>.As a <role>, I can.<PREFIX-00>: \"<capability> — so that <value> — acceptance: <observable proof>.\"",
+      "non_functional": "non_functional.<snake_case_quality>.<PREFIX-00>: \"<property> — so that <value> — acceptance: <observable proof>.\"",
+      "deferred": "deferred.<snake_case_area>.\"[deferred] <PREFIX-00>\": \"<future capability> — so that <value> — acceptance: <observable proof>.\"",
+      "domain_section": "<snake_case_section>.<snake_case_group>.<PREFIX-00>: \"<requirement> — so that <value> — acceptance: <observable proof>.\""
+    },
+    "rules": [
+      "One requirement per YAML scalar line.",
+      "Under a role heading, start with a verb; do not repeat `I can` (the parent key already says it).",
+      "Use `— so that` for value and `— acceptance:` for observable proof; end with a period.",
+      "Keep IDs stable; never renumber or reuse an ID.",
+      "Choose the prefix from the nearest area or quality; add a new prefix only when nothing fits.",
+      "Put future scope under `deferred` with a quoted `\"[deferred] PREFIX-00\"` key.",
+      "Prefer observable acceptance language over implementation tasks.",
+      "Declare ID prefixes, roles, domain sections, and domain rules in requirements.vocab.md."
+    ]
+  },
+  "type": "object",
+  "minProperties": 1,
+  "properties": {
+    "functional": {
+      "type": "object",
+      "description": "Functional requirements grouped by system area, then (recommended) by story role.",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/functionalArea" },
+      "propertyNames": { "$ref": "#/$defs/snakeCaseKey" }
+    },
+    "non_functional": {
+      "type": "object",
+      "description": "Non-functional requirements grouped by quality attribute.",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/requirementMap" },
+      "propertyNames": { "$ref": "#/$defs/snakeCaseKey" }
+    },
+    "deferred": {
+      "type": "object",
+      "description": "Explicitly deferred / future requirements grouped by area.",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/deferredRequirementMap" },
+      "propertyNames": { "$ref": "#/$defs/snakeCaseKey" }
+    }
+  },
+  "additionalProperties": {
+    "$ref": "#/$defs/domainSection",
+    "description": "A project-specific domain section (e.g. a data/privacy boundary). Declare it in requirements.vocab.md."
+  },
+  "propertyNames": { "$ref": "#/$defs/snakeCaseKey" },
+  "$defs": {
+    "snakeCaseKey": {
+      "description": "A lower snake_case grouping key such as `accounts`, `data_policy`, or `openness_and_governance`.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$",
+      "examples": ["accounts", "restaurant_website", "public_data"]
+    },
+    "roleKey": {
+      "description": "A role heading written as a user-story actor plus shared capability prefix. Use `As a ..., I can` so requirement lines can start directly with the capability verb.",
+      "type": "string",
+      "pattern": "^As .+, I can$",
+      "examples": ["As a user, I can", "As an admin, I can", "As a developer, I can"]
+    },
+    "requirementId": {
+      "description": "A stable requirement identifier: an uppercase area prefix plus a zero-padded sequence number.",
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9]*-[0-9]{2,}$",
+      "examples": ["ACC-01", "SEC-03", "PERF-10"]
+    },
+    "deferredRequirementId": {
+      "description": "A stable requirement identifier for future scope: the normal ID prefixed with `[deferred] `.",
+      "type": "string",
+      "pattern": "^\\[deferred\\] [A-Z][A-Z0-9]*-[0-9]{2,}$",
+      "examples": ["[deferred] PAY-01", "[deferred] POR-03"]
+    },
+    "requirementText": {
+      "description": "One compact requirement sentence. Recommended shape: `<capability> — so that <value> — acceptance: <observable proof>.` Under a role heading, start with the capability verb because the parent already supplies `As a <role>, I can`.",
+      "type": "string",
+      "minLength": 1,
+      "examples": [
+        "reset my password from a signed email link — so that a lost password is recoverable without support — acceptance: a used or expired link is rejected and a fresh link succeeds.",
+        "public endpoints are rate-limited — so that abuse is constrained — acceptance: repeated abusive requests receive throttled responses."
+      ]
+    },
+    "requirementMap": {
+      "description": "A map of requirement IDs to one-line requirement text. Used under non-functional qualities, domain-section groups, and each role heading.",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/requirementText" },
+      "propertyNames": { "$ref": "#/$defs/requirementId" }
+    },
+    "deferredRequirementMap": {
+      "description": "A map of deferred requirement IDs to one-line requirement text. Used only under the top-level `deferred` section.",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/requirementText" },
+      "propertyNames": { "$ref": "#/$defs/deferredRequirementId" }
+    },
+    "functionalArea": {
+      "description": "A system-area section. Recommended: group by role heading (`As a <role>, I can`) whose value is a requirement map. A project that does not use roles may put a requirement map directly.",
+      "type": "object",
+      "minProperties": 1,
+      "anyOf": [
+        {
+          "additionalProperties": { "$ref": "#/$defs/requirementMap" },
+          "propertyNames": { "$ref": "#/$defs/roleKey" }
+        },
+        { "$ref": "#/$defs/requirementMap" }
+      ]
+    },
+    "domainSection": {
+      "description": "A project-specific top-level section: snake_case subgroups whose values are requirement maps, like `non_functional`.",
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/requirementMap" },
+      "propertyNames": { "$ref": "#/$defs/snakeCaseKey" }
+    }
+  }
+}
