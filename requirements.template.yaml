@@ -3,7 +3,16 @@
 # groups: functional(area -> "As a <role>, I can:" -> ID) · non_functional & domain sections(group -> ID) · deferred(area -> "[deferred] ID")
 # ids:    PREFIX-NN, uppercase, stable, never reused.
 # docs:   optional map (kept at the file's end) of <filename> -> description of what it is and when to read it.
+# goals/non_goals: optional lists, kept first — one distilled line each, not requirements: no IDs, no clauses.
 # yaml-language-server: $schema=./requirements.schema.json
+goals:
+  - account recovery never depends on contacting human support.
+  - a user is never forced to remember a shared secret to stay secure.
+
+non_goals:
+  - never a payments processor that holds customer balances.
+  - not a multi-tenant SaaS; a deployment serves one organization.
+
 functional:
   accounts:
     As a user, I can:

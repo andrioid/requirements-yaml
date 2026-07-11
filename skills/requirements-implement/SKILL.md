@@ -1,7 +1,7 @@
 ---
 name: requirements-implement
 description: Implement a codebase change from a requirements.yaml in the requirements-yaml format — turn a requirement's `verified when` into a test, build until it passes, and cite the ID so the work is traceable. Use when writing or changing code to satisfy one or more requirements tracked as PREFIX-NN IDs.
-version: 0.2.0
+version: 0.3.0
 ---
 
 # requirements-implement
@@ -40,15 +40,22 @@ that is out of scope.
 ## Rules
 
 - **A vague `verified when` is a requirements bug, not a guess to paper over.**
-  If the proof is not observable or testable, fix the requirement (or flag it
-  with the format's `[?]` marker) before building — do not invent acceptance
-  criteria in code.
+  If the proof is not observable or testable, propose a fix to a human for
+  approval (or flag it with the format's `[?]` marker) before building — do not
+  invent acceptance criteria in code, and do not edit the requirement yourself.
 - **Non-functional IDs** (`SEC-`, `PERF-`, …) usually name a measurable budget or
   condition; realize it as a performance/security test or a documented, ID-cited
   check, not a vibe.
 - **Never implement `deferred` items** — they are explicitly out of scope.
+- **Let `goals` steer and `non_goals` bound.** A project goal arbitrates design
+  above a single `so that`; a `non_goal` is a hard boundary — never build toward
+  one, and if a requirement contradicts a non-goal, flag it (the sensor won't).
 - **Don't add status to the file.** No `done:`/`status:` keys; coverage is read
   from ID references in tests and history.
+- **Never change `requirements.yaml` as a side effect.** Implementing satisfies
+  requirements; it does not rewrite them. Any needed change — fixing a bug,
+  resolving a `[?]`, promoting a `deferred` item — is proposed for human approval
+  per the format skill's **Human approval** rule; the file changes only after.
 
 ## Done
 

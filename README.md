@@ -15,11 +15,16 @@ functional:
 - IDs (`ACC-01`) are stable, so plans, tests, and commits can reference them.
 - Grouped into `functional`, `non_functional`, optional `deferred`, plus any
   project-specific domain sections.
+- Optional `goals` and `non_goals` lists at the top set the project's vision and
+  its boundaries — plain one-liners, not requirements (`non_goals` is *not ever*,
+  distinct from `deferred`'s *not yet*).
 - An optional top-level `docs` map lists supporting material by filename
   (ubiquitous language, domain model, ADRs), each with a note on what it is and
   when to read it.
 - Quotes are optional — add them only if a clause contains `: ` or the value
   starts with a YAML symbol.
+- The file is human-owned: an agent proposes edits and a human approves them —
+  `requirements.yaml` is never rewritten unilaterally.
 
 ## The format
 
@@ -60,7 +65,7 @@ It reports where the file and the code disagree; it never edits either.
 2. Copy `requirements.template.yaml` into your repo as `requirements.yaml`, then
    edit the header and examples. To vendor it straight from a release:
    ```
-   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.4.0/requirements.template.yaml
+   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.5.0/requirements.template.yaml
    ```
 3. (Optional) vendor `requirements.schema.json` beside it for editor autocomplete
    — the template's `$schema` field already points at it.

@@ -7,6 +7,18 @@
   "type": "object",
   "minProperties": 1,
   "properties": {
+    "goals": {
+      "type": "array",
+      "description": "Optional list of project goals — the vision the requirements serve. Free one-line statements, not requirements: no IDs, no clauses. Kept first by convention.",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/statement" }
+    },
+    "non_goals": {
+      "type": "array",
+      "description": "Optional list of non-goals — boundaries the project deliberately will not cross. Distinct from `deferred` (merely not-yet); a non-goal is not-ever. Free one-line statements, not requirements.",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/statement" }
+    },
     "docs": {
       "type": "object",
       "description": "Optional map of supporting documents. Each key is a document filename (a repo-relative path or a URL); each value describes what the document is and when it should be read.",
@@ -43,6 +55,11 @@
       "description": "A lower snake_case grouping key such as `accounts`, `data_policy`, or `openness_and_governance`.",
       "type": "string",
       "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+    },
+    "statement": {
+      "description": "A free one-line goal or non-goal statement: a distilled direction or boundary, not a requirement — no ID, no `so that`/`verified when`. Quote it when it starts with `[?]` or another YAML indicator.",
+      "type": "string",
+      "minLength": 1
     },
     "roleKey": {
       "description": "A role heading: `As a <role>, I can`, so requirement lines can start with the capability verb.",

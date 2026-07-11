@@ -39,6 +39,8 @@ function parseArgs(argv) {
 function scan(text) {
   const lines = text.split(/\r?\n/);
   const reqs = [];
+  const statements = [];
+  const LIST_ITEM_RE = /^\s*-\s+(.*)$/;
   let section = null; // top-level section key
   let role = null; // { indent }
 
@@ -75,12 +77,23 @@ function scan(text) {
       });
       return;
     }
+    // goals / non_goals: bare list statements — invisible to grammar/coverage,
+    // but their [?] still counts toward "settled".
+    if (section === "goals" || section === "non_goals") {
+      const li = raw.match(LIST_ITEM_RE);
+      if (li) {
+        let v = li[1];
+        if (v.startsWith('"') && v.endsWith('"') && v.length >= 2) v = v.slice(1, -1);
+        statements.push({ section, line: lineNo, text: v });
+        return;
+      }
+    }
     // a nested mapping key that is not an ID ends the current role scope
     const nested = raw.match(NESTED_KEY_RE);
     if (nested && !ID_RE.test(nested[2])) role = null;
   });
 
-  return reqs;
+  return { reqs, statements };
 }
 
 // --- integrity + grammar findings from the file alone ---
@@ -182,16 +195,18 @@ function main() {
     process.exit(2);
   }
 
-  const reqs = scan(text);
+  const { reqs, statements } = scan(text);
   const findings = fileFindings(reqs);
   const cov = opts.coverage ? coverage(reqs, opts.path) : { ran: false, reason: "coverage disabled", findings: [] };
   findings.push(...cov.findings);
 
-  const unresolved = reqs.filter((r) => r.text.includes("[?]"));
+  const unresolvedReqs = reqs.filter((r) => r.text.includes("[?]"));
+  const unresolvedStmts = statements.filter((s) => s.text.includes("[?]"));
+  const unresolvedLabels = [...unresolvedReqs.map((r) => r.id), ...unresolvedStmts.map((s) => `${s.section}:${s.line}`)];
   const counts = {
     requirements: reqs.length,
     deferred: reqs.filter((r) => r.deferred).length,
-    unresolved: unresolved.length,
+    unresolved: unresolvedLabels.length,
     integrity: findings.filter((f) => f.severity === "integrity").length,
     grammar: findings.filter((f) => f.severity === "grammar").length,
     coverage: findings.filter((f) => f.severity === "coverage").length,
@@ -199,7 +214,7 @@ function main() {
   const exit = counts.integrity > 0 ? 1 : 0;
 
   if (opts.json) {
-    console.log(JSON.stringify({ file: opts.path, counts, coverageRan: cov.ran, coverageReason: cov.reason ?? null, unresolved: unresolved.map((r) => r.id), findings }, null, 2));
+    console.log(JSON.stringify({ file: opts.path, counts, coverageRan: cov.ran, coverageReason: cov.reason ?? null, unresolved: unresolvedLabels, findings }, null, 2));
     process.exit(exit);
   }
 
@@ -217,8 +232,8 @@ function main() {
       console.log(`  ${f.id}${at}  ${f.kind} — ${f.detail}`);
     }
   }
-  if (unresolved.length)
-    console.log(`\nunresolved [?] (confirm with a human): ${unresolved.map((r) => r.id).join(", ")}`);
+  if (unresolvedLabels.length)
+    console.log(`\nunresolved [?] (confirm with a human): ${unresolvedLabels.join(", ")}`);
 
   console.log(`\nsummary: ${counts.integrity} integrity, ${counts.grammar} grammar, ${counts.coverage} coverage`);
   process.exit(exit);

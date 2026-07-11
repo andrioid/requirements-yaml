@@ -1,7 +1,7 @@
 ---
 name: requirements-discover
-description: Reverse-engineer a requirements.yaml in the requirements-yaml format from an existing codebase — infer capabilities from code, verified-when from tests, and mark assumed rationale with [?] for human confirmation. Use when bootstrapping requirements for a codebase that has none, or reconciling a requirements file with what the code actually does.
-version: 0.2.0
+description: Reverse-engineer a requirements.yaml in the requirements-yaml format from an existing codebase — infer capabilities from code, verified-when from tests, mark assumed rationale with [?] for human confirmation, and distil the project's goals and non-goals. Use when bootstrapping requirements for a codebase that has none, or reconciling a requirements file with what the code actually does.
+version: 0.3.0
 ---
 
 # requirements-discover
@@ -39,6 +39,14 @@ the code cannot tell you.
      middleware, config, and CI; these are the easiest requirements to miss.
 4. **Point at docs that exist** — if the repo has a glossary, domain model, or
    API contract, list them in the bottom `docs` map with a when-to-read note.
+5. **Distil `goals`, transcribe `non_goals`** — the vision layer recovers
+   asymmetrically:
+   - **`goals`**: synthesize 3–7 from the README/pitch and by clustering the
+     `so that` values you wrote — the recurring themes *are* the goals. Mark each
+     inferred goal `[?]` (quote it: `- "[?] …"`) for a human to confirm.
+   - **`non_goals`**: transcribe only boundaries the project *states* — "out of
+     scope" notes, rejected-alternative ADRs, `wontfix` issues. **Never infer a
+     non-goal from absence**; unbuilt is not the same as out-of-bounds.
 
 ## Rules
 
@@ -54,6 +62,10 @@ the code cannot tell you.
   cross-check: `DANGLING` findings are IDs already cited in code but absent from
   your file — usually requirements you missed; the `UNCOVERED` list and the
   unresolved `[?]` tally show how far the draft is from settled.
+- **The file is a proposal until a human approves it.** Present the reconstructed
+  `requirements.yaml` for explicit sign-off — a generated or reconciled file is a
+  draft for review, not adopted requirements, until a human approves it (the
+  format skill's **Human approval** rule).
 
 ## Done
 
