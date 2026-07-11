@@ -1,7 +1,7 @@
 ---
 name: requirements-discover
 description: Reverse-engineer a requirements.yaml in the requirements-yaml format from an existing codebase — infer capabilities from code, verified-when from tests, and mark assumed rationale with [?] for human confirmation. Use when bootstrapping requirements for a codebase that has none, or reconciling a requirements file with what the code actually does.
-version: 0.1.0
+version: 0.2.0
 ---
 
 # requirements-discover
@@ -50,6 +50,10 @@ the code cannot tell you.
 - **Completeness is the hard part.** Walk the surface map and confirm each live
   entrypoint produced at least one requirement; call out anything intentionally
   excluded.
+- **Run the requirements-yaml sensor** (`scripts/check.mjs`) as a mechanical
+  cross-check: `DANGLING` findings are IDs already cited in code but absent from
+  your file — usually requirements you missed; the `UNCOVERED` list and the
+  unresolved `[?]` tally show how far the draft is from settled.
 
 ## Done
 

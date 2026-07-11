@@ -1,7 +1,7 @@
 ---
 name: requirements-implement
 description: Implement a codebase change from a requirements.yaml in the requirements-yaml format — turn a requirement's `verified when` into a test, build until it passes, and cite the ID so the work is traceable. Use when writing or changing code to satisfy one or more requirements tracked as PREFIX-NN IDs.
-version: 0.1.0
+version: 0.2.0
 ---
 
 # requirements-implement
@@ -30,6 +30,12 @@ Work one ID at a time.
 4. **Cite the ID** in the commit or PR (and in the test). Traceability lives
    outside `requirements.yaml`, which stays status-free — the ID references are
    how coverage is discoverable.
+
+The **requirements-yaml** sensor (`scripts/check.mjs`) turns this into a
+worklist: its `UNCOVERED` findings are IDs no code cites yet — pick from those,
+and after implementing re-run it so the ID drops off `UNCOVERED`, proving the
+test/commit citation landed. A `DEFERRED-CITED` finding means you cited something
+that is out of scope.
 
 ## Rules
 

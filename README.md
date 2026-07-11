@@ -47,9 +47,12 @@ npx skills add andrioid/requirements-yaml@requirements-discover
 - **requirements-discover** — reverse-engineer a `requirements.yaml` from an
   existing codebase.
 
-The workflow skills depend on `requirements-yaml`. Skills carry instructions
-only; they vendor the template and schema from the repo root (pinned to the
-release tag) rather than bundling them.
+The workflow skills depend on `requirements-yaml`. Skills carry instructions and
+vendor the template and schema from the repo root (pinned to the release tag)
+rather than bundling them. The `requirements-yaml` skill additionally ships
+`scripts/check.mjs` — a read-only sensor that surfaces duplicate IDs, grammar
+drift, and (via `git grep`) which requirements the code does and does not cite.
+It reports where the file and the code disagree; it never edits either.
 
 ## Start
 
@@ -57,11 +60,13 @@ release tag) rather than bundling them.
 2. Copy `requirements.template.yaml` into your repo as `requirements.yaml`, then
    edit the header and examples. To vendor it straight from a release:
    ```
-   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.3.0/requirements.template.yaml
+   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.4.0/requirements.template.yaml
    ```
 3. (Optional) vendor `requirements.schema.json` beside it for editor autocomplete
    — the template's `$schema` field already points at it.
-4. To review a file, ask your agent (which now has the skill) to check it against
-   the format.
+4. To review a file, run the sensor
+   (`node skills/requirements-yaml/scripts/check.mjs`) for the mechanical checks,
+   and ask your agent (which now has the skill) to judge the rest against the
+   format.
 
 The full rules live in the format skill, `skills/requirements-yaml/SKILL.md`.

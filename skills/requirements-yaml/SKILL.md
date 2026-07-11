@@ -1,7 +1,7 @@
 ---
 name: requirements-yaml
 description: Author, edit, and review a project's requirements.yaml in the compact requirements-yaml format — one line per requirement, grouped into functional / non_functional / deferred plus optional domain sections and a docs map of supporting references. Use when creating or maintaining a requirements.yaml, adding or revising requirements, or checking that a requirements file follows the format.
-version: 0.3.0
+version: 0.4.0
 ---
 
 # requirements-yaml
@@ -127,6 +127,35 @@ Authoring rules and review are one list. To review, check each and report
   left.
 - A value is quoted only when it contains `: ` or starts with a YAML indicator.
 
+## Checking (the sensor)
+
+`scripts/check.mjs` (bundled with this skill) is this checklist compiled into a
+read-only script, plus the coverage join `git grep` would otherwise do by hand.
+It reports where the file and the codebase disagree; it never edits either side —
+you reconcile.
+
+```
+node .claude/skills/requirements-yaml/scripts/check.mjs [requirements.yaml] [--json] [--no-coverage]
+```
+
+- **INTEGRITY is the only loud finding.** `DUPLICATE-ID` means two lines share an
+  ID and a YAML parser silently keeps just one — the source of truth is corrupt.
+  That is the one thing worth stopping for; the script exits non-zero only here.
+- **GRAMMAR** (advisory) — a line missing `; so that ` / `; verified when `, not
+  ending in a period, or starting with "I can" under a role heading.
+- **COVERAGE** (advisory, needs git) — the ID join outside the file:
+  - `UNCOVERED` — a non-deferred ID no code cites: build it, or add the ID to the
+    test/commit that already covers it.
+  - `DANGLING` — an ID cited in code but absent from the file: a renamed or
+    mistyped reference to reconcile.
+  - `DEFERRED-CITED` — a `deferred` ID cited in code, which should not be built.
+- It also counts unresolved `[?]`, which mark the file as not yet settled.
+
+The sensor sharpens attention; it does not judge quality — whether a
+`verified when` is a genuine observable outcome stays your call. With no node or
+git it degrades to this checklist plus `git grep <ID>`, so it is an enhancement,
+not a dependency.
+
 ## Companion skills
 
 Build on this format; each depends on it:
@@ -144,12 +173,14 @@ the release tag matching this skill's version:
 
 - `requirements.template.yaml` — a ready-to-copy starter; save it as your
   project's `requirements.yaml` and keep its header.
-  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.3.0/requirements.template.yaml`
+  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.4.0/requirements.template.yaml`
 - `requirements.schema.json` — optional editor aid (autocomplete + hover). It
   mirrors the structural shape (key and ID patterns, nesting); this skill stays
   authoritative for grammar and conventions. The template's `$schema` field
   points at it once both sit in your repo.
-  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.3.0/requirements.schema.json`
+  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.4.0/requirements.schema.json`
+- `scripts/check.mjs` — the read-only sensor (see **Checking**); it ships inside
+  this skill, so it needs no vendoring — run it with node.
 
 Offline, the grammar and the `Structure` skeleton above are enough to hand-build
 a starter — the template is just that, populated.
