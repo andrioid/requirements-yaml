@@ -138,10 +138,21 @@ Build on this format; each depends on it:
 
 ## Scaffolding
 
-- `requirements.template.yaml` — a ready-to-copy starter; keep its header.
+The format's two files live at the **repo root**, not inside this skill — a skill
+carries instructions, and these are vendored into your project. Fetch them from
+the release tag matching this skill's version:
+
+- `requirements.template.yaml` — a ready-to-copy starter; save it as your
+  project's `requirements.yaml` and keep its header.
+  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.3.0/requirements.template.yaml`
 - `requirements.schema.json` — optional editor aid (autocomplete + hover). It
   mirrors the structural shape (key and ID patterns, nesting); this skill stays
-  authoritative for grammar and conventions.
+  authoritative for grammar and conventions. The template's `$schema` field
+  points at it once both sit in your repo.
+  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.3.0/requirements.schema.json`
+
+Offline, the grammar and the `Structure` skeleton above are enough to hand-build
+a starter — the template is just that, populated.
 
 ## Versioning
 

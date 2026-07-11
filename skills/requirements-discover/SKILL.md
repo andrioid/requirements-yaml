@@ -53,6 +53,7 @@ the code cannot tell you.
 
 ## Done
 
-A `requirements.yaml` that validates against `requirements.schema.json`, covers
+A `requirements.yaml` that validates against the project's vendored
+`requirements.schema.json`, covers
 the enumerated surface, and in which every `so that` is either sourced from the
 code/docs or marked `[?]` for confirmation.
