@@ -5,22 +5,13 @@
   "description": "Editor aid for requirements.yaml: a compact, human-editable requirements format grouped into functional areas, non-functional qualities, deferred scope, and optional project domain sections. Structural only — this schema is not a build gate; see FORMAT.md.",
   "markdownDescription": "Compact requirements. Group by `functional.<system_area>.As a <role>, I can.<ID>`, `non_functional.<quality>.<ID>`, or a project domain section. Each requirement value reads `<capability> — so that <value> — acceptance: <observable proof>.` Full spec and per-project vocabulary: **FORMAT.md** and **requirements.vocab.md**.",
   "x-authoring": {
-    "purpose": "Let a human edit quickly and an LLM loosely verify. Nothing here is enforced at build time.",
-    "format": {
-      "functional": "functional.<snake_case_area>.As a <role>, I can.<PREFIX-00>: \"<capability> — so that <value> — acceptance: <observable proof>.\"",
-      "non_functional": "non_functional.<snake_case_quality>.<PREFIX-00>: \"<property> — so that <value> — acceptance: <observable proof>.\"",
-      "deferred": "deferred.<snake_case_area>.\"[deferred] <PREFIX-00>\": \"<future capability> — so that <value> — acceptance: <observable proof>.\"",
-      "domain_section": "<snake_case_section>.<snake_case_group>.<PREFIX-00>: \"<requirement> — so that <value> — acceptance: <observable proof>.\""
-    },
+    "purpose": "Compact requirements a human can hand-edit and an LLM can review. Not enforced. Full rules and per-project vocabulary: FORMAT.md and requirements.vocab.md.",
+    "line": "<capability> — so that <value> — acceptance: <observable proof>.",
     "rules": [
-      "One requirement per YAML scalar line.",
-      "Under a role heading, start with a verb; do not repeat `I can` (the parent key already says it).",
-      "Use `— so that` for value and `— acceptance:` for observable proof; end with a period.",
-      "Keep IDs stable; never renumber or reuse an ID.",
-      "Choose the prefix from the nearest area or quality; add a new prefix only when nothing fits.",
-      "Put future scope under `deferred` with a quoted `\"[deferred] PREFIX-00\"` key.",
-      "Prefer observable acceptance language over implementation tasks.",
-      "Declare ID prefixes, roles, domain sections, and domain rules in requirements.vocab.md."
+      "One requirement per line; end with a period; include both `— so that` and `— acceptance:`.",
+      "Under a role heading, start with a verb, not `I can`.",
+      "IDs are `PREFIX-NN`, stable and unique; never renumber or reuse.",
+      "Deferred scope goes under `deferred` with a quoted `\"[deferred] PREFIX-NN\"` key."
     ]
   },
   "type": "object",
