@@ -1,22 +1,28 @@
 # requirements-yaml — one line per requirement, edit by hand.
-# line:   <ID>: capability | so that value | verified when observable proof.
+# line:   <ID>: capability; so that value; verified when observable proof.
 # groups: functional(area -> "As a <role>, I can:" -> ID) · non_functional & domain sections(group -> ID) · deferred(area -> "[deferred] ID")
 # ids:    PREFIX-NN, uppercase, stable, never reused.
+# docs:   optional map (kept at the file's end) of <filename> -> description of what it is and when to read it.
 # yaml-language-server: $schema=./requirements.schema.json
 functional:
   accounts:
     As a user, I can:
-      ACC-01: reset my password from a signed email link | so that a lost password is recoverable without contacting support | verified when a used or expired link is rejected and a freshly issued link succeeds.
-      ACC-02: sign in with a one-time code | so that I do not have to remember a password | verified when a valid code within its window authenticates and an expired code does not.
+      ACC-01: reset my password from a signed email link; so that a lost password is recoverable without contacting support; verified when a used or expired link is rejected and a freshly issued link succeeds.
+      ACC-02: sign in with a one-time code; so that I do not have to remember a password; verified when a valid code within its window authenticates and an expired code does not.
     As an admin, I can:
-      ACC-03: revoke another user's active sessions | so that a compromised account can be locked out immediately | verified when the target's next request is unauthenticated after revocation.
+      ACC-03: revoke another user's active sessions; so that a compromised account can be locked out immediately; verified when the target's next request is unauthenticated after revocation.
 
 non_functional:
   security:
-    SEC-01: public endpoints are rate-limited | so that credential stuffing and abuse are constrained | verified when repeated abusive requests from one source receive throttled responses.
+    SEC-01: public endpoints are rate-limited; so that credential stuffing and abuse are constrained; verified when repeated abusive requests from one source receive throttled responses.
   performance:
-    PERF-01: list views respond within a documented budget under expected load | so that the app stays usable at scale | verified when p95 list-view latency meets the stated budget in a load test.
+    PERF-01: list views respond within a documented budget under expected load; so that the app stays usable at scale; verified when p95 list-view latency meets the stated budget in a load test.
 
 deferred:
   payments:
-    "[deferred] PAY-01": users can pay online through a hosted checkout | so that paid plans are possible later | verified when funds settle without the platform holding balances.
+    "[deferred] PAY-01": users can pay online through a hosted checkout; so that paid plans are possible later; verified when funds settle without the platform holding balances.
+
+# docs is optional — supporting documents and when to read them, kept at the end.
+docs:
+  docs/glossary.md: the ubiquitous language — read before naming anything in a requirement.
+  docs/domain-model.md: aggregates, entities, and invariants — read before adding or changing a functional area.

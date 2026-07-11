@@ -7,14 +7,17 @@ per requirement.
 functional:
   accounts:
     As a user, I can:
-      ACC-01: reset my password from a signed email link | so that a lost password is recoverable without support | verified when a used or expired link is rejected and a fresh one works.
+      ACC-01: reset my password from a signed email link; so that a lost password is recoverable without support; verified when a used or expired link is rejected and a fresh one works.
 ```
 
-- **`capability | so that value | verified when observable proof.`** — the whole
+- **`capability; so that value; verified when observable proof.`** — the whole
   requirement on one line.
 - IDs (`ACC-01`) are stable, so plans, tests, and commits can reference them.
 - Grouped into `functional`, `non_functional`, optional `deferred`, plus any
   project-specific domain sections.
+- An optional top-level `docs` map lists supporting material by filename
+  (ubiquitous language, domain model, ADRs), each with a note on what it is and
+  when to read it.
 - Quotes are optional — add them only if a clause contains `: ` or the value
   starts with a YAML symbol.
 

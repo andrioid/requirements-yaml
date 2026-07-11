@@ -3,10 +3,17 @@
   "$id": "https://requirements-yaml.example/requirements.schema.json",
   "title": "Compact requirements document",
   "description": "Optional editor aid for a requirements.yaml in the requirements-yaml format. Structural only — it enforces no grammar and gates nothing. Authoring and review rules live in the requirements-yaml skill (SKILL.md).",
-  "markdownDescription": "Compact requirements. One line each: `<ID>: <capability> | so that <value> | verified when <observable proof>.` Grouped into `functional` (area → `As a <role>, I can:` → ID), `non_functional` (quality → ID), optional `deferred`, and project domain sections. Full rules: the **requirements-yaml** skill.",
+  "markdownDescription": "Compact requirements. One line each: `<ID>: <capability>; so that <value>; verified when <observable proof>.` Grouped into `functional` (area → `As a <role>, I can:` → ID), `non_functional` (quality → ID), optional `deferred`, an optional `docs` map (filename → what it is and when to read it), and project domain sections. Full rules: the **requirements-yaml** skill.",
   "type": "object",
   "minProperties": 1,
   "properties": {
+    "docs": {
+      "type": "object",
+      "description": "Optional map of supporting documents. Each key is a document filename (a repo-relative path or a URL); each value describes what the document is and when it should be read.",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/docDescription" },
+      "propertyNames": { "$ref": "#/$defs/docPath" }
+    },
     "functional": {
       "type": "object",
       "description": "Functional requirements grouped by system area, then (recommended) by story role.",
@@ -53,7 +60,17 @@
       "pattern": "^\\[deferred\\] [A-Z][A-Z0-9]*-[0-9]{2,}$"
     },
     "requirementText": {
-      "description": "One requirement line. Recommended: `<capability> | so that <value> | verified when <observable proof>.` Under a role heading, start with the verb. Quote only if a clause contains `: ` or the value starts with a YAML indicator.",
+      "description": "One requirement line. Recommended: `<capability>; so that <value>; verified when <observable proof>.` Under a role heading, start with the verb. Quote only if a clause contains `: ` or the value starts with a YAML indicator.",
+      "type": "string",
+      "minLength": 1
+    },
+    "docPath": {
+      "description": "A supporting document's filename: a repo-relative path (e.g. `docs/glossary.md`) or a URL.",
+      "type": "string",
+      "minLength": 1
+    },
+    "docDescription": {
+      "description": "What the document is and, importantly, when it should be read — e.g. `the ubiquitous language — read before naming anything in a requirement`.",
       "type": "string",
       "minLength": 1
     },
