@@ -22,7 +22,15 @@ const REQ_LINE_RE = new RegExp(
 );
 const TOPLEVEL_RE = /^([a-z][a-z0-9_]*):\s*$/;
 const NESTED_KEY_RE = /^(\s+)([a-z][a-z0-9_]*):\s*$/;
-const ROLE_RE = /^(\s+)As .+, I can:\s*$/;
+// A role heading `As a <role>, I can:` — group 2 is the role token.
+const ROLE_RE = /^(\s+)As (.+), I can:\s*$/;
+// A `roles:` map entry — group 2 is the (optionally quoted) role name.
+const ROLE_DEF_RE = /^\s+("?)(.+?)\1:\s?.+$/;
+
+// The bare role name from a heading token: drop a leading article.
+function roleToken(s) {
+  return s.replace(/^(?:an?|the)\s+/i, "").trim();
+}
 
 function parseArgs(argv) {
   const opts = { path: null, json: false, coverage: true };
@@ -40,6 +48,8 @@ function scan(text) {
   const lines = text.split(/\r?\n/);
   const reqs = [];
   const statements = [];
+  const roleDefs = []; // { name, line } from a `roles:` map
+  const usedRoles = new Map(); // role name -> first heading line
   const LIST_ITEM_RE = /^\s*-\s+(.*)$/;
   let section = null; // top-level section key
   let role = null; // { indent }
@@ -57,6 +67,8 @@ function scan(text) {
     const roleM = raw.match(ROLE_RE);
     if (roleM) {
       role = { indent: roleM[1].length };
+      const name = roleToken(roleM[2]);
+      if (name && !usedRoles.has(name)) usedRoles.set(name, lineNo);
       return;
     }
     const req = raw.match(REQ_LINE_RE);
@@ -77,6 +89,14 @@ function scan(text) {
       });
       return;
     }
+    // roles: map entries — collected to cross-check against the headings above.
+    if (section === "roles") {
+      const rd = raw.match(ROLE_DEF_RE);
+      if (rd) {
+        roleDefs.push({ name: rd[2], line: lineNo });
+        return;
+      }
+    }
     // goals / non_goals: bare list statements — invisible to grammar/coverage,
     // but their [?] still counts toward "settled".
     if (section === "goals" || section === "non_goals") {
@@ -93,7 +113,7 @@ function scan(text) {
     if (nested && !ID_RE.test(nested[2])) role = null;
   });
 
-  return { reqs, statements };
+  return { reqs, statements, roleDefs, usedRoles };
 }
 
 // --- integrity + grammar findings from the file alone ---
@@ -130,6 +150,22 @@ function fileFindings(reqs) {
       findings.push({ severity: "grammar", kind: "I-CAN-PREFIX", id: r.id, line: r.line, detail: 'starts with "I can" under a role heading — start with the verb' });
   }
 
+  return findings;
+}
+
+// --- roles: cross-check the roles map against the As-a-<role> headings ---
+// Runs only when a `roles` map exists; otherwise headings need no definitions.
+function roleFindings(roleDefs, usedRoles) {
+  if (roleDefs.length === 0) return [];
+  const defined = new Map();
+  for (const d of roleDefs) if (!defined.has(d.name)) defined.set(d.name, d.line);
+  const findings = [];
+  for (const [name, line] of usedRoles)
+    if (!defined.has(name))
+      findings.push({ severity: "grammar", kind: "ROLE-UNDEFINED", id: name, line, detail: 'used in an "As a <role>" heading but not defined in roles' });
+  for (const [name, line] of defined)
+    if (!usedRoles.has(name))
+      findings.push({ severity: "grammar", kind: "ROLE-UNUSED", id: name, line, detail: "defined in roles but no heading uses it" });
   return findings;
 }
 
@@ -195,8 +231,9 @@ function main() {
     process.exit(2);
   }
 
-  const { reqs, statements } = scan(text);
+  const { reqs, statements, roleDefs, usedRoles } = scan(text);
   const findings = fileFindings(reqs);
+  findings.push(...roleFindings(roleDefs, usedRoles));
   const cov = opts.coverage ? coverage(reqs, opts.path) : { ran: false, reason: "coverage disabled", findings: [] };
   findings.push(...cov.findings);
 

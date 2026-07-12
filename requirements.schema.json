@@ -3,7 +3,7 @@
   "$id": "https://requirements-yaml.example/requirements.schema.json",
   "title": "Compact requirements document",
   "description": "Optional editor aid for a requirements.yaml in the requirements-yaml format. Structural only — it enforces no grammar and gates nothing. Authoring and review rules live in the requirements-yaml skill (SKILL.md).",
-  "markdownDescription": "Compact requirements. One line each: `<ID>: <capability>; so that <value>; verified when <observable proof>.` Grouped into `functional` (area → `As a <role>, I can:` → ID), `non_functional` (quality → ID), optional `deferred`, an optional `docs` map (filename → what it is and when to read it), and project domain sections. Full rules: the **requirements-yaml** skill.",
+  "markdownDescription": "Compact requirements. One line each: `<ID>: <capability>; so that <value>; verified when <observable proof>.` Grouped into `functional` (area → `As a <role>, I can:` → ID), `non_functional` (quality → ID), optional `deferred`, an optional `roles` map (role → who they are), an optional `docs` map (filename → what it is and when to read it), and project domain sections. Full rules: the **requirements-yaml** skill.",
   "type": "object",
   "minProperties": 1,
   "properties": {
@@ -18,6 +18,13 @@
       "description": "Optional list of non-goals — boundaries the project deliberately will not cross. Distinct from `deferred` (merely not-yet); a non-goal is not-ever. Free one-line statements, not requirements.",
       "minItems": 1,
       "items": { "$ref": "#/$defs/statement" }
+    },
+    "roles": {
+      "type": "object",
+      "description": "Optional map of the actors named in functional role headings. Each key is a role name matching the token in an `As a <role>, I can` heading (e.g. `user`, `admin`); each value is a one-line description of who they are and their authority. Kept before `functional` by convention.",
+      "minProperties": 1,
+      "additionalProperties": { "$ref": "#/$defs/roleDescription" },
+      "propertyNames": { "$ref": "#/$defs/roleName" }
     },
     "docs": {
       "type": "object",
@@ -65,6 +72,16 @@
       "description": "A role heading: `As a <role>, I can`, so requirement lines can start with the capability verb.",
       "type": "string",
       "pattern": "^As .+, I can$"
+    },
+    "roleName": {
+      "description": "A role name matching the token used in a functional role heading — the noun after `As a`/`As an` and before `, I can` (e.g. `user`, `admin`, `first-time visitor`). Lowercase words, optionally hyphen- or space-separated.",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:[ -][a-z0-9]+)*$"
+    },
+    "roleDescription": {
+      "description": "One line describing who a role is and the authority they hold — not a requirement: no ID, no clauses.",
+      "type": "string",
+      "minLength": 1
     },
     "requirementId": {
       "description": "A stable requirement ID: uppercase area prefix plus a zero-padded number.",

@@ -1,7 +1,7 @@
 ---
 name: requirements-yaml
 description: Author, edit, and review a project's requirements.yaml in the compact requirements-yaml format — one line per requirement, grouped into functional / non_functional / deferred plus optional goals / non_goals lists, domain sections, and a docs map of supporting references. Use when creating or maintaining a requirements.yaml, adding or revising requirements, or checking that a requirements file follows the format.
-version: 0.5.0
+version: 0.6.0
 ---
 
 # requirements-yaml
@@ -53,6 +53,8 @@ goals:                          # optional list, kept first — the distilled vi
   - <one-line goal…>
 non_goals:                      # optional list — boundaries, not roadmap
   - <one-line boundary…>
+roles:                          # optional map — the actors named in role headings
+  <role>: <who they are and their authority>
 functional:
   <area>:                       # snake_case system area
     As a <role>, I can:
@@ -67,7 +69,7 @@ docs:                           # optional; kept last — filename -> when to re
   <filename>: <what it is, and when to read it>
 ```
 
-- `functional` + `non_functional` are core; `deferred` and `docs` are optional.
+- `functional` + `non_functional` are core; `roles`, `deferred`, and `docs` are optional.
 - A project may add top-level **domain sections** — same `group → {ID: line}`
   shape as `non_functional` (e.g. a public/private data boundary).
 - Order is presentational; by convention `goals`/`non_goals` come first and the
@@ -95,6 +97,28 @@ non_goals:
 - **`[?]`** may mark a statement you cannot yet stand behind (typically a goal
   inferred during discovery). Quote the value when `[?]` leads it — `- "[?] …"` —
   because `[` is a YAML indicator. A settled file has none left.
+
+## Roles
+
+An optional `roles` map names the actors that `functional` role headings refer to,
+each with a one-line description of who they are and what authority they hold:
+
+```yaml
+roles:
+  user: an authenticated account holder acting on their own data.
+  admin: an operator who can act across all users — the system's highest trust level.
+```
+
+- Keys are **bare role names** matching the token in an `As a <role>, I can`
+  heading (`As an admin` → `admin`); values are pointers, not requirements — no
+  IDs, no clauses.
+- Kept **before `functional`** by convention, so the actors are defined before the
+  requirements that reference them.
+- **Optional and earned.** Add it when roles are non-obvious or differ in
+  authority (`org owner`, `verified reviewer`, `anonymous visitor`); skip it when
+  `user` / `admin` speak for themselves.
+- Once present, keep it in sync with the headings — the sensor flags a role used
+  in a heading but not defined here, and a role defined here that no heading uses.
 
 ## Supporting documents
 
@@ -147,8 +171,8 @@ BIL-01: charge a saved card on renewal; so that [?] subscriptions continue witho
 A `requirements.yaml` opens with a short comment header: a one-line grammar
 reminder and a `# requirements-yaml` provenance line. Project specifics
 (prefixes, roles, domain-section meaning, domain rules) are documented by the
-requirements themselves and by the documents `docs` points to — read the existing
-IDs, sections, and docs before adding one.
+requirements themselves, the optional `roles` map, and the documents `docs` points
+to — read the existing IDs, sections, roles, and docs before adding one.
 
 ## Authoring = review checklist
 
@@ -158,6 +182,8 @@ Authoring rules and review are one list. To review, check each and report
 - One requirement per line, ending in a period, with `; so that ` and
   `; verified when `.
 - Under a role heading, lines start with a verb, not "I can".
+- If a `roles` map is present, its keys are bare role names, each matching an `As a
+  <role>` heading, and every role a heading uses is defined there.
 - `verified when` states an observable outcome, not an implementation task.
 - IDs are `PREFIX-NN`, stable, and unique across the file.
 - Group keys are `snake_case`; top-level sections are `functional`,
@@ -186,7 +212,9 @@ node .claude/skills/requirements-yaml/scripts/check.mjs [requirements.yaml] [--j
   ID and a YAML parser silently keeps just one — the source of truth is corrupt.
   That is the one thing worth stopping for; the script exits non-zero only here.
 - **GRAMMAR** (advisory) — a line missing `; so that ` / `; verified when `, not
-  ending in a period, or starting with "I can" under a role heading.
+  ending in a period, or starting with "I can" under a role heading; also, when a
+  `roles` map is present, a role used in a heading but not defined there
+  (`ROLE-UNDEFINED`) or defined there but used by no heading (`ROLE-UNUSED`).
 - **COVERAGE** (advisory, needs git) — the ID join outside the file:
   - `UNCOVERED` — a non-deferred ID no code cites: build it, or add the ID to the
     test/commit that already covers it.
@@ -218,12 +246,12 @@ the release tag matching this skill's version:
 
 - `requirements.template.yaml` — a ready-to-copy starter; save it as your
   project's `requirements.yaml` and keep its header.
-  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.5.0/requirements.template.yaml`
+  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.6.0/requirements.template.yaml`
 - `requirements.schema.json` — optional editor aid (autocomplete + hover). It
   mirrors the structural shape (key and ID patterns, nesting); this skill stays
   authoritative for grammar and conventions. The template's `$schema` field
   points at it once both sit in your repo.
-  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.5.0/requirements.schema.json`
+  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.6.0/requirements.schema.json`
 - `scripts/check.mjs` — the read-only sensor (see **Checking**); it ships inside
   this skill, so it needs no vendoring — run it with node.
 

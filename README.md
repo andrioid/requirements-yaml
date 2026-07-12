@@ -18,6 +18,8 @@ functional:
 - Optional `goals` and `non_goals` lists at the top set the project's vision and
   its boundaries — plain one-liners, not requirements (`non_goals` is *not ever*,
   distinct from `deferred`'s *not yet*).
+- An optional `roles` map defines the actors named in `As a <role>` headings —
+  each role mapped to a one-line description of who they are and their authority.
 - An optional top-level `docs` map lists supporting material by filename
   (ubiquitous language, domain model, ADRs), each with a note on what it is and
   when to read it.
@@ -65,7 +67,7 @@ It reports where the file and the code disagree; it never edits either.
 2. Copy `requirements.template.yaml` into your repo as `requirements.yaml`, then
    edit the header and examples. To vendor it straight from a release:
    ```
-   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.5.0/requirements.template.yaml
+   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.6.0/requirements.template.yaml
    ```
 3. (Optional) vendor `requirements.schema.json` beside it for editor autocomplete
    — the template's `$schema` field already points at it.

@@ -4,6 +4,7 @@
 # ids:    PREFIX-NN, uppercase, stable, never reused.
 # docs:   optional map (kept at the file's end) of <filename> -> description of what it is and when to read it.
 # goals/non_goals: optional lists, kept first — one distilled line each, not requirements: no IDs, no clauses.
+# roles:  optional map (kept before functional) of <role> -> who they are; names match the "As a <role>" headings.
 # yaml-language-server: $schema=./requirements.schema.json
 goals:
   - account recovery never depends on contacting human support.
@@ -12,6 +13,10 @@ goals:
 non_goals:
   - never a payments processor that holds customer balances.
   - not a multi-tenant SaaS; a deployment serves one organization.
+
+roles:
+  user: an authenticated account holder acting on their own data.
+  admin: an operator who can act across all users — the system's highest trust level.
 
 functional:
   accounts:
