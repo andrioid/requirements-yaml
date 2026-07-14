@@ -67,7 +67,7 @@ It reports where the file and the code disagree; it never edits either.
 2. Copy `requirements.template.yaml` into your repo as `requirements.yaml`, then
    edit the header and examples. To vendor it straight from a release:
    ```
-   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.6.0/requirements.template.yaml
+   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.6.1/requirements.template.yaml
    ```
 3. (Optional) vendor `requirements.schema.json` beside it for editor autocomplete
    — the template's `$schema` field already points at it.

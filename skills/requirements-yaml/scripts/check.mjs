@@ -182,10 +182,13 @@ function coverage(reqs, filePath) {
 
   const relFile = relative(top, abs) || basename(abs);
   let out = "";
+  // --untracked so a just-written (unstaged) test counts under TDD — still honors
+  // .gitignore, so dist/ and node_modules/ stay out. Exclude *.md so coverage means a
+  // test or code citation, not a prose/plan/doc mention (which proves nothing).
   try {
     out = execFileSync(
       "git",
-      ["grep", "-I", "--no-color", "-hoE", ID, "--", ".", `:(exclude)${relFile}`],
+      ["grep", "-I", "--untracked", "--no-color", "-hoE", ID, "--", ".", `:(exclude)${relFile}`, ":(exclude)*.md"],
       { cwd: top, encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] },
     );
   } catch (e) {

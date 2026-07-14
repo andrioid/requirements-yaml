@@ -1,7 +1,7 @@
 ---
 name: requirements-yaml
 description: Author, edit, and review a project's requirements.yaml in the compact requirements-yaml format — one line per requirement, grouped into functional / non_functional / deferred plus optional goals / non_goals lists, domain sections, and a docs map of supporting references. Use when creating or maintaining a requirements.yaml, adding or revising requirements, or checking that a requirements file follows the format.
-version: 0.6.0
+version: 0.6.1
 ---
 
 # requirements-yaml
@@ -221,6 +221,9 @@ node .claude/skills/requirements-yaml/scripts/check.mjs [requirements.yaml] [--j
   - `DANGLING` — an ID cited in code but absent from the file: a renamed or
     mistyped reference to reconcile.
   - `DEFERRED-CITED` — a `deferred` ID cited in code, which should not be built.
+  - The join scans tracked **and** untracked files (honoring `.gitignore`, so
+    `dist/` / `node_modules/` stay out) but **excludes `*.md`** — coverage means a
+    *test or code* citation, not a prose/plan/doc mention, which proves nothing.
 - It also counts unresolved `[?]` — including on `goals`/`non_goals`, which are
   otherwise exempt from grammar and coverage — marking the file as not yet settled.
 
@@ -246,12 +249,12 @@ the release tag matching this skill's version:
 
 - `requirements.template.yaml` — a ready-to-copy starter; save it as your
   project's `requirements.yaml` and keep its header.
-  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.6.0/requirements.template.yaml`
+  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.6.1/requirements.template.yaml`
 - `requirements.schema.json` — optional editor aid (autocomplete + hover). It
   mirrors the structural shape (key and ID patterns, nesting); this skill stays
   authoritative for grammar and conventions. The template's `$schema` field
   points at it once both sit in your repo.
-  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.6.0/requirements.schema.json`
+  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.6.1/requirements.schema.json`
 - `scripts/check.mjs` — the read-only sensor (see **Checking**); it ships inside
   this skill, so it needs no vendoring — run it with node.
 
