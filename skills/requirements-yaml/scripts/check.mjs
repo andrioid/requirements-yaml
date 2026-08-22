@@ -142,8 +142,8 @@ function fileFindings(reqs) {
   for (const r of reqs) {
     if (!r.text.includes("; so that "))
       findings.push({ severity: "grammar", kind: "NO-SO-THAT", id: r.id, line: r.line, detail: 'missing "; so that "' });
-    if (!r.text.includes("; verified when "))
-      findings.push({ severity: "grammar", kind: "NO-VERIFIED-WHEN", id: r.id, line: r.line, detail: 'missing "; verified when "' });
+    if (r.text.includes("; verified when "))
+      findings.push({ severity: "grammar", kind: "LEGACY-VERIFIED-WHEN", id: r.id, line: r.line, detail: 'carries a legacy "; verified when " clause — fold its outcome into the capability' });
     if (!r.text.trimEnd().endsWith("."))
       findings.push({ severity: "grammar", kind: "NO-PERIOD", id: r.id, line: r.line, detail: "does not end in a period" });
     if (r.underRole && /^i can\b/i.test(r.text.trim()))

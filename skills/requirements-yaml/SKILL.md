@@ -1,7 +1,7 @@
 ---
 name: requirements-yaml
 description: Author, edit, and review a project's requirements.yaml in the compact requirements-yaml format — one line per requirement, grouped into functional / non_functional / deferred plus optional goals / non_goals lists, domain sections, and a docs map of supporting references. Use when creating or maintaining a requirements.yaml, adding or revising requirements, or checking that a requirements file follows the format.
-version: 0.6.1
+version: 0.7.0
 ---
 
 # requirements-yaml
@@ -29,21 +29,38 @@ implementing or discovering.
 ## Line grammar
 
 ```
-<ID>: <capability>; so that <value>; verified when <observable proof>.
+<ID>: <observable capability>; so that <value>.
 ```
 
-- `;` separates the three clauses — no space before it, a single space after, as
+- `;` separates the two clauses — no space before it, a single space after, as
   in ordinary prose (`capability; so that …`). A parser or reviewer may tolerate
   stray whitespace around the separator, but author it tight.
-- **capability** — what the actor or system does. Under a role heading, start
-  with the verb; the heading already says "I can".
+- **capability** — what the actor or system does, stated so it can be observed
+  and falsified. Under a role heading, start with the verb; the heading already
+  says "I can". See **Observable capability** below.
 - **so that** — why it matters.
-- **verified when** — an observable condition; outcomes, not implementation
-  tasks.
 - One line, ending in a period.
 - **Quotes are optional.** Add double quotes around the value only if a clause
   contains `: ` (colon-space) or the value starts with a YAML indicator
   (`- ? : , [ ] { } # & * ! | > ' " % @` or backtick). Otherwise leave it bare.
+
+## Observable capability
+
+There is no separate proof clause: the capability *is* the acceptance criterion,
+so it carries its own limits.
+
+- **Two questions.** Could a reader write a failing test from this line alone?
+  Does it state the limits that make it falsifiable — the window, the threshold,
+  the boundary, the case that must be refused?
+- **Fold the edge in, don't append it.** `sign in with a one-time code that
+  expires after a short window` — not `sign in with a one-time code` plus a
+  trailing note that expired codes fail.
+- **Name the number where one exists.** A budget belongs in the line (`within a
+  p95 budget of 300 ms at expected load`), not deferred to a document the
+  requirement merely alludes to.
+- **Behavior at the actor's boundary, never the mechanism.** No test method, no
+  fixtures, no internal call sequence — what is observably true, not how you
+  would go about showing it.
 
 ## Structure
 
@@ -58,13 +75,13 @@ roles:                          # optional map — the actors named in role head
 functional:
   <area>:                       # snake_case system area
     As a <role>, I can:
-      <ID>: <verb…>; so that <value>; verified when <proof>.
+      <ID>: <verb…>; so that <value>.
 non_functional:
   <quality>:                    # snake_case: security, performance, ...
-    <ID>: <property…>; so that <value>; verified when <proof>.
+    <ID>: <property…>; so that <value>.
 deferred:
   <area>:
-    "[deferred] <ID>": <future…>; so that <value>; verified when <proof>.
+    "[deferred] <ID>": <future…>; so that <value>.
 docs:                           # optional; kept last — filename -> when to read it
   <filename>: <what it is, and when to read it>
 ```
@@ -88,7 +105,7 @@ non_goals:
 ```
 
 - **Plain one-line statements, not requirements** — no IDs, no roles, no
-  `so that` / `verified when`; a bare YAML list, order free.
+  `so that`; a bare YAML list, order free.
 - **`goals`** are the vision the requirements serve; **`non_goals`** are
   boundaries the project deliberately will not cross.
 - **`non_goals` is not `deferred`.** `deferred` is *not yet* — a paused
@@ -146,8 +163,8 @@ the file. Deferred IDs are quoted and prefixed: `"[deferred] PAY-01"`.
 IDs are the join key between a requirement and everything that satisfies it, and
 those links live **outside** this file — `requirements.yaml` stays status-free.
 
-- Cite the ID in the test that proves the `verified when`, and in the commit or
-  PR that implements the capability.
+- Cite the ID in the test that proves the capability, and in the commit or PR
+  that implements it.
 - `git grep <ID>` (or a search across tests) then shows what covers a
   requirement; an ID with no hits is unimplemented or unverified.
 
@@ -158,7 +175,7 @@ rarely recoverable from code — is marked `[?]` right after the clause keyword 
 left for a human to confirm:
 
 ```
-BIL-01: charge a saved card on renewal; so that [?] subscriptions continue without re-entry; verified when a due invoice captures against the stored token.
+BIL-01: charge a saved card on renewal; so that [?] subscriptions continue without re-entry.
 ```
 
 - `[?]` reads as "assumed — confirm with a human"; it sits inside the value, so
@@ -179,12 +196,13 @@ to — read the existing IDs, sections, roles, and docs before adding one.
 Authoring rules and review are one list. To review, check each and report
 `ID: problem`. Advisory, not a build gate.
 
-- One requirement per line, ending in a period, with `; so that ` and
-  `; verified when `.
+- One requirement per line, ending in a period, with `; so that `.
 - Under a role heading, lines start with a verb, not "I can".
 - If a `roles` map is present, its keys are bare role names, each matching an `As a
   <role>` heading, and every role a heading uses is defined there.
-- `verified when` states an observable outcome, not an implementation task.
+- The capability is observable and states its own limits — a failing test could
+  be written from the line — and no line carries a legacy `; verified when `
+  clause.
 - IDs are `PREFIX-NN`, stable, and unique across the file.
 - Group keys are `snake_case`; top-level sections are `functional`,
   `non_functional`, `deferred`, `docs`, plus any domain sections already in the
@@ -211,8 +229,9 @@ node .claude/skills/requirements-yaml/scripts/check.mjs [requirements.yaml] [--j
 - **INTEGRITY is the only loud finding.** `DUPLICATE-ID` means two lines share an
   ID and a YAML parser silently keeps just one — the source of truth is corrupt.
   That is the one thing worth stopping for; the script exits non-zero only here.
-- **GRAMMAR** (advisory) — a line missing `; so that ` / `; verified when `, not
-  ending in a period, or starting with "I can" under a role heading; also, when a
+- **GRAMMAR** (advisory) — a line missing `; so that `, not ending in a period,
+  starting with "I can" under a role heading, or still carrying a legacy
+  `; verified when ` clause (`LEGACY-VERIFIED-WHEN`); also, when a
   `roles` map is present, a role used in a heading but not defined there
   (`ROLE-UNDEFINED`) or defined there but used by no heading (`ROLE-UNUSED`).
 - **COVERAGE** (advisory, needs git) — the ID join outside the file:
@@ -227,17 +246,16 @@ node .claude/skills/requirements-yaml/scripts/check.mjs [requirements.yaml] [--j
 - It also counts unresolved `[?]` — including on `goals`/`non_goals`, which are
   otherwise exempt from grammar and coverage — marking the file as not yet settled.
 
-The sensor sharpens attention; it does not judge quality — whether a
-`verified when` is a genuine observable outcome stays your call. With no node or
-git it degrades to this checklist plus `git grep <ID>`, so it is an enhancement,
-not a dependency.
+The sensor sharpens attention; it does not judge quality — whether a capability
+is genuinely observable stays your call. With no node or git it degrades to this
+checklist plus `git grep <ID>`, so it is an enhancement, not a dependency.
 
 ## Companion skills
 
 Build on this format; each depends on it:
 
 - **requirements-implement** — build a change from a requirement: turn its
-  `verified when` into a test, implement, and cite the ID.
+  capability into a test, implement, and cite the ID.
 - **requirements-discover** — reverse-engineer a `requirements.yaml` from an
   existing codebase.
 
@@ -249,12 +267,12 @@ the release tag matching this skill's version:
 
 - `requirements.template.yaml` — a ready-to-copy starter; save it as your
   project's `requirements.yaml` and keep its header.
-  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.6.1/requirements.template.yaml`
+  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.7.0/requirements.template.yaml`
 - `requirements.schema.json` — optional editor aid (autocomplete + hover). It
   mirrors the structural shape (key and ID patterns, nesting); this skill stays
   authoritative for grammar and conventions. The template's `$schema` field
   points at it once both sit in your repo.
-  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.6.1/requirements.schema.json`
+  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.7.0/requirements.schema.json`
 - `scripts/check.mjs` — the read-only sensor (see **Checking**); it ships inside
   this skill, so it needs no vendoring — run it with node.
 
@@ -267,3 +285,9 @@ This skill is the living contract, versioned by its frontmatter `version` and
 distributed via `npx skills`. A `requirements.yaml` carries no version — only the
 `# requirements-yaml` provenance line. To adopt a format change, update the skill
 (`npx skills update`); if the grammar changed, migrate the file in place.
+
+**0.7 dropped the `verified when` clause.** A line is now `<ID>: <observable
+capability>; so that <value>.` To migrate, fold each old proof into its
+capability — the window, threshold, or refused case it named belongs there;
+whatever is left describes a test method and is dropped, not relocated. The
+sensor's `LEGACY-VERIFIED-WHEN` finding lists the lines still to convert.

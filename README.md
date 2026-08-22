@@ -7,11 +7,13 @@ per requirement. The format is the point; the agent skills are an addon.
 functional:
   accounts:
     As a user, I can:
-      ACC-01: reset my password from a signed email link; so that a lost password is recoverable without support; verified when a used or expired link is rejected and a fresh one works.
+      ACC-01: reset my password from a signed email link that works once and then expires; so that a lost password is recoverable without contacting support.
 ```
 
-- **`capability; so that value; verified when observable proof.`** — the whole
-  requirement on one line.
+- **`observable capability; so that value.`** — the whole requirement on one
+  line. There is no separate proof clause: the capability carries its own limits
+  (the window, the threshold, the case that must be refused), so it doubles as
+  the acceptance criterion.
 - IDs (`ACC-01`) are stable, so plans, tests, and commits can reference them.
 - Grouped into `functional`, `non_functional`, optional `deferred`, plus any
   project-specific domain sections.
@@ -50,7 +52,7 @@ npx skills add andrioid/requirements-yaml@requirements-discover
 - **requirements-yaml** — the format: author, edit, and review a
   `requirements.yaml`.
 - **requirements-implement** — build a change from a requirement: turn its
-  `verified when` into a test, implement, and cite the ID.
+  capability into a test, implement, and cite the ID.
 - **requirements-discover** — reverse-engineer a `requirements.yaml` from an
   existing codebase.
 
@@ -67,7 +69,7 @@ It reports where the file and the code disagree; it never edits either.
 2. Copy `requirements.template.yaml` into your repo as `requirements.yaml`, then
    edit the header and examples. To vendor it straight from a release:
    ```
-   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.6.1/requirements.template.yaml
+   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.7.0/requirements.template.yaml
    ```
 3. (Optional) vendor `requirements.schema.json` beside it for editor autocomplete
    — the template's `$schema` field already points at it.

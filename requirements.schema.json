@@ -3,7 +3,7 @@
   "$id": "https://requirements-yaml.example/requirements.schema.json",
   "title": "Compact requirements document",
   "description": "Optional editor aid for a requirements.yaml in the requirements-yaml format. Structural only — it enforces no grammar and gates nothing. Authoring and review rules live in the requirements-yaml skill (SKILL.md).",
-  "markdownDescription": "Compact requirements. One line each: `<ID>: <capability>; so that <value>; verified when <observable proof>.` Grouped into `functional` (area → `As a <role>, I can:` → ID), `non_functional` (quality → ID), optional `deferred`, an optional `roles` map (role → who they are), an optional `docs` map (filename → what it is and when to read it), and project domain sections. Full rules: the **requirements-yaml** skill.",
+  "markdownDescription": "Compact requirements. One line each: `<ID>: <observable capability>; so that <value>.` Grouped into `functional` (area → `As a <role>, I can:` → ID), `non_functional` (quality → ID), optional `deferred`, an optional `roles` map (role → who they are), an optional `docs` map (filename → what it is and when to read it), and project domain sections. Full rules: the **requirements-yaml** skill.",
   "type": "object",
   "minProperties": 1,
   "properties": {
@@ -64,7 +64,7 @@
       "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
     },
     "statement": {
-      "description": "A free one-line goal or non-goal statement: a distilled direction or boundary, not a requirement — no ID, no `so that`/`verified when`. Quote it when it starts with `[?]` or another YAML indicator.",
+      "description": "A free one-line goal or non-goal statement: a distilled direction or boundary, not a requirement — no ID, no `so that` clause. Quote it when it starts with `[?]` or another YAML indicator.",
       "type": "string",
       "minLength": 1
     },
@@ -94,7 +94,7 @@
       "pattern": "^\\[deferred\\] [A-Z][A-Z0-9]*-[0-9]{2,}$"
     },
     "requirementText": {
-      "description": "One requirement line. Recommended: `<capability>; so that <value>; verified when <observable proof>.` Under a role heading, start with the verb. Quote only if a clause contains `: ` or the value starts with a YAML indicator.",
+      "description": "One requirement line. Recommended: `<observable capability>; so that <value>.` The capability carries its own limits, so it doubles as the acceptance criterion. Under a role heading, start with the verb. Quote only if a clause contains `: ` or the value starts with a YAML indicator.",
       "type": "string",
       "minLength": 1
     },

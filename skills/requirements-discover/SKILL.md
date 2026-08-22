@@ -1,7 +1,7 @@
 ---
 name: requirements-discover
-description: Reverse-engineer a requirements.yaml in the requirements-yaml format from an existing codebase — infer capabilities from code, verified-when from tests, mark assumed rationale with [?] for human confirmation, and distil the project's goals and non-goals. Use when bootstrapping requirements for a codebase that has none, or reconciling a requirements file with what the code actually does.
-version: 0.3.0
+description: Reverse-engineer a requirements.yaml in the requirements-yaml format from an existing codebase — infer observable capabilities from code and tests, mark assumed rationale with [?] for human confirmation, and distil the project's goals and non-goals. Use when bootstrapping requirements for a codebase that has none, or reconciling a requirements file with what the code actually does.
+version: 0.4.0
 ---
 
 # requirements-discover
@@ -11,13 +11,14 @@ defines the file; follow its grammar and review checklist). The job is to read
 what the system *does* and write it back as requirements — honestly flagging what
 the code cannot tell you.
 
-## The three clauses recover unevenly
+## The two clauses recover unevenly
 
-- **capability — in the code.** Read it from the surface: HTTP routes, public
-  API, CLI commands, UI actions, scheduled jobs, event handlers.
-- **verified when — in the tests.** Lift the observable outcome from an existing
-  test's assertions. No test for a behavior? State the outcome the code visibly
-  produces, and note the coverage gap.
+- **capability — in the code, sharpened by the tests.** Read the behavior off the
+  surface: HTTP routes, public API, CLI commands, UI actions, scheduled jobs,
+  event handlers. Then read its tests: the limits they assert — the expiry
+  window, the rejected input, the measured budget — belong *in* the capability,
+  because it is the acceptance criterion. No test for a behavior? State the
+  limits the code visibly enforces, and note the coverage gap.
 - **so that — usually NOT in the code.** Rationale and business value are rarely
   recoverable. Infer your best guess and mark it `[?]` (the format's provisional
   marker) for a human to confirm. **Never fabricate confident rationale.**
@@ -28,8 +29,8 @@ the code cannot tell you.
    commands, jobs, UI actions) with search/grep, not memory. This list is your
    coverage checklist: an entrypoint with no resulting requirement is a gap.
 2. **Turn each behavior into a line** — verb-first `capability` under an
-   `As a <role>, I can:` heading, `verified when` lifted from its test (or the
-   observed behavior), and a `so that [?]` best-guess value.
+   `As a <role>, I can:` heading, carrying the limits its tests (or the observed
+   code) enforce, plus a `so that [?]` best-guess value.
 3. **Bootstrap the structure** (empty file, no IDs to infer from):
    - Derive `snake_case` areas from module/package/route grouping.
    - Mint an uppercase prefix per area (`accounts` → `ACC`, `billing` → `BIL`);
