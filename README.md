@@ -7,13 +7,15 @@ per requirement. The format is the point; the agent skills are an addon.
 functional:
   accounts:
     As a user, I can:
-      ACC-01: reset my password from a signed email link that works once and then expires; so that a lost password is recoverable without contacting support.
+      ACC-01: regain account access after losing my sign-in credential; so that I can recover without contacting support.
 ```
 
 - **`observable capability; so that value.`** — the whole requirement on one
-  line. There is no separate proof clause: the capability carries its own limits
-  (the window, the threshold, the case that must be refused), so it doubles as
-  the acceptance criterion.
+  line. Limits, edge cases, and acceptance criteria live outside the requirement.
+- Requirements contain only **what** ability is needed and **why** it matters.
+  Technologies, protocols, components, endpoints, data models, algorithms, UI
+  controls, test methods, and other implementation choices stay in design
+  documents, plans, and code.
 - IDs (`ACC-01`) are stable, so plans, tests, and commits can reference them.
 - Grouped into `functional`, `non_functional`, optional `deferred`, plus any
   project-specific domain sections.
@@ -69,7 +71,7 @@ It reports where the file and the code disagree; it never edits either.
 2. Copy `requirements.template.yaml` into your repo as `requirements.yaml`, then
    edit the header and examples. To vendor it straight from a release:
    ```
-   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.7.0/requirements.template.yaml
+   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.8.0/requirements.template.yaml
    ```
 3. (Optional) vendor `requirements.schema.json` beside it for editor autocomplete
    — the template's `$schema` field already points at it.

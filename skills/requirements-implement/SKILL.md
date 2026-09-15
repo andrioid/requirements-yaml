@@ -1,30 +1,34 @@
 ---
 name: requirements-implement
 description: Implement a codebase change from a requirements.yaml in the requirements-yaml format — turn a requirement's capability into a test, build until it passes, and cite the ID so the work is traceable. Use when writing or changing code to satisfy one or more requirements tracked as PREFIX-NN IDs.
-version: 0.4.0
+version: 0.5.0
 ---
 
 # requirements-implement
 
 Build from a `requirements.yaml` (the **requirements-yaml** format skill defines
 the file; read it if the grammar is unfamiliar). A requirement is already shaped
-for this: the `capability` clause is stated observably — an acceptance test in
-prose — and the ID is a stable handle you cite from tests and commits.
+for this: the `capability` clause states what ability to provide, the value guides
+design, and the ID is a stable handle you cite from tests and commits.
 
 ## Workflow
 
 Work one ID at a time.
 
 1. **Read the requirement.** Take the line for the ID and split its two clauses:
-   `capability` (what to build, and the limits it must hold at) and `so that`
-   (the value it must serve). Open any `docs` the file lists whose note says to
+   `capability` (what ability to provide) and `so that` (the value it must serve).
+   Open any `docs` the file lists whose note says to
    read it before this kind of change — the ubiquitous language and domain model
    keep your names and model honest.
-2. **Turn the capability into the check first.** It is stated observably by
-   construction — including the window, threshold, or refused case it names — so
-   it maps to test assertions. Write (or identify) a test that fails now and
-   passes when the requirement is met. Name or tag the test with the ID so
-   `git grep <ID>` finds it later.
+   The absence of a prescribed technology, protocol, component, UI, algorithm,
+   or storage model is intentional: choose those during design, outside the
+   requirement.
+2. **Define the check outside the requirement.** Use existing specifications and
+   tests to find the applicable limits and edge cases. If acceptance criteria are
+   missing or consequentially ambiguous, propose them separately for human
+   agreement rather than adding them to `requirements.yaml`. Write (or identify)
+   a test that fails now and passes when the ability is provided. Name or tag the
+   test with the ID so `git grep <ID>` finds it later.
 3. **Implement** until that test passes. Let `so that` arbitrate design choices:
    if an approach satisfies the capability as written but not the stated value,
    it is the wrong approach.
@@ -40,14 +44,17 @@ that is out of scope.
 
 ## Rules
 
-- **A capability you cannot write a failing test from is a requirements bug, not
-  a guess to paper over.** If it is not observable — no limit, no threshold, no
-  refused case — propose a fix to a human for approval (or flag it with the
-  format's `[?]` marker) before building; do not invent acceptance criteria in
-  code, and do not edit the requirement yourself.
-- **Non-functional IDs** (`SEC-`, `PERF-`, …) usually name a measurable budget or
-  condition; realize it as a performance/security test or a documented, ID-cited
-  check, not a vibe.
+- **Do not expect a requirement to contain its own test case.** Resolve missing
+  acceptance criteria outside `requirements.yaml`; do not invent consequential
+  product behavior silently.
+- **Do not push design decisions back into the requirement.** If implementation
+  work reveals a necessary externally observable constraint, propose that
+  ability-level constraint for approval. Keep the chosen mechanism in code,
+  plans, or design documentation.
+- **Non-functional IDs** (`SEC-`, `PERF-`, …) name a required quality and its
+  value. Find its measurable budget or condition in the project's acceptance
+  criteria or specifications, then realize it as a performance/security test or
+  a documented, ID-cited check—not a vibe.
 - **Never implement `deferred` items** — they are explicitly out of scope.
 - **Let `goals` steer and `non_goals` bound.** A project goal arbitrates design
   above a single `so that`; a `non_goal` is a hard boundary — never build toward
@@ -61,7 +68,7 @@ that is out of scope.
 
 ## Done
 
-For each ID you took on: an ID-tagged test demonstrates its capability holding at
-the limits the line states, and the ID appears in the implementing commit.
+For each ID you took on: an ID-tagged test demonstrates its capability under the
+agreed acceptance criteria, and the ID appears in the implementing commit.
 Anything you could not satisfy is reported by ID with the specific blocker — not
 silently dropped.

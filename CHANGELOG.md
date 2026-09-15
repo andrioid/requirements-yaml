@@ -3,6 +3,19 @@
 Tags track the `requirements-yaml` skill version; workflow skills version
 independently.
 
+## v0.8.0
+
+- Requirements now explicitly contain only the **what** (ability) and **why**
+  (value). Authoring and discovery reject technologies, protocols, components,
+  data models, algorithms, UI controls, test methods, and other implementation
+  choices.
+- Limits, edge cases, measurable boundaries, and acceptance criteria now live
+  outside the requirement instead of being compressed into its capability.
+- Examples were raised from solution-specific wording to implementation-independent
+  capabilities.
+- `requirements-implement` and `requirements-discover` 0.5.0 preserve the
+  ability/design boundary in their workflows.
+
 ## v0.7.0
 
 - **Breaking: dropped the `verified when` clause.** A line is now

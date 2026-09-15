@@ -1,7 +1,7 @@
 ---
 name: requirements-discover
 description: Reverse-engineer a requirements.yaml in the requirements-yaml format from an existing codebase — infer observable capabilities from code and tests, mark assumed rationale with [?] for human confirmation, and distil the project's goals and non-goals. Use when bootstrapping requirements for a codebase that has none, or reconciling a requirements file with what the code actually does.
-version: 0.4.0
+version: 0.5.0
 ---
 
 # requirements-discover
@@ -13,12 +13,13 @@ the code cannot tell you.
 
 ## The two clauses recover unevenly
 
-- **capability — in the code, sharpened by the tests.** Read the behavior off the
+- **capability — in the code, then abstracted.** Read the behavior off the
   surface: HTTP routes, public API, CLI commands, UI actions, scheduled jobs,
-  event handlers. Then read its tests: the limits they assert — the expiry
-  window, the rejected input, the measured budget — belong *in* the capability,
-  because it is the acceptance criterion. No test for a behavior? State the
-  limits the code visibly enforces, and note the coverage gap.
+  event handlers. Tests can confirm that the behavior exists, but their limits,
+  edge cases, and proof methods do not belong in the requirement. Use all such
+  artifacts as evidence, never as wording: the requirement states the resulting
+  ability, not its route, command, widget, protocol, component, acceptance
+  criteria, or other implementation.
 - **so that — usually NOT in the code.** Rationale and business value are rarely
   recoverable. Infer your best guess and mark it `[?]` (the format's provisional
   marker) for a human to confirm. **Never fabricate confident rationale.**
@@ -28,9 +29,12 @@ the code cannot tell you.
 1. **Map the surface first** — enumerate every entrypoint (routes, exported API,
    commands, jobs, UI actions) with search/grep, not memory. This list is your
    coverage checklist: an entrypoint with no resulting requirement is a gap.
-2. **Turn each behavior into a line** — verb-first `capability` under an
-   `As a <role>, I can:` heading, carrying the limits its tests (or the observed
-   code) enforce, plus a `so that [?]` best-guess value.
+2. **Turn each behavior into a line, then raise it one level** — verb-first `capability` under an
+   `As a <role>, I can:` heading, plus a `so that [?]` best-guess value. Strip out every
+   technology, protocol, component, endpoint, data structure, algorithm, UI
+   control, internal sequence, test method, limit, edge case, acceptance
+   criterion, and deployment choice. Keep only the ability and value. A different
+   implementation must be able to satisfy the same line unchanged.
 3. **Bootstrap the structure** (empty file, no IDs to infer from):
    - Derive `snake_case` areas from module/package/route grouping.
    - Mint an uppercase prefix per area (`accounts` → `ACC`, `billing` → `BIL`);
@@ -54,6 +58,9 @@ the code cannot tell you.
 - **Ground every clause in something you read** — a route, a test, a config —
   not in assumption. The one sanctioned assumption is `so that`, and it must wear
   a `[?]`.
+- **Evidence is not requirement language.** Code tells you that an ability exists;
+  it does not justify copying its current design into the capability. Record
+  implementation details in discovery notes, not in `requirements.yaml`.
 - **Review against the format checklist** before handing off, and resolve every
   `[?]` with a human; a file still carrying `[?]` is a draft, not settled.
 - **Completeness is the hard part.** Walk the surface map and confirm each live

@@ -1,7 +1,7 @@
 ---
 name: requirements-yaml
 description: Author, edit, and review a project's requirements.yaml in the compact requirements-yaml format — one line per requirement, grouped into functional / non_functional / deferred plus optional goals / non_goals lists, domain sections, and a docs map of supporting references. Use when creating or maintaining a requirements.yaml, adding or revising requirements, or checking that a requirements file follows the format.
-version: 0.7.0
+version: 0.8.0
 ---
 
 # requirements-yaml
@@ -35,32 +35,34 @@ implementing or discovering.
 - `;` separates the two clauses — no space before it, a single space after, as
   in ordinary prose (`capability; so that …`). A parser or reviewer may tolerate
   stray whitespace around the separator, but author it tight.
-- **capability** — what the actor or system does, stated so it can be observed
-  and falsified. Under a role heading, start with the verb; the heading already
-  says "I can". See **Observable capability** below.
+- **capability** — what the actor or system is able to do, without prescribing
+  how it is delivered or proved. Under a role heading,
+  start with the verb; the heading already says "I can". See **Ability, not
+  implementation** below.
 - **so that** — why it matters.
 - One line, ending in a period.
 - **Quotes are optional.** Add double quotes around the value only if a clause
   contains `: ` (colon-space) or the value starts with a YAML indicator
   (`- ? : , [ ] { } # & * ! | > ' " % @` or backtick). Otherwise leave it bare.
 
-## Observable capability
+## Ability, not implementation
 
-There is no separate proof clause: the capability *is* the acceptance criterion,
-so it carries its own limits.
-
-- **Two questions.** Could a reader write a failing test from this line alone?
-  Does it state the limits that make it falsifiable — the window, the threshold,
-  the boundary, the case that must be refused?
-- **Fold the edge in, don't append it.** `sign in with a one-time code that
-  expires after a short window` — not `sign in with a one-time code` plus a
-  trailing note that expired codes fail.
-- **Name the number where one exists.** A budget belongs in the line (`within a
-  p95 budget of 300 ms at expected load`), not deferred to a document the
-  requirement merely alludes to.
-- **Behavior at the actor's boundary, never the mechanism.** No test method, no
-  fixtures, no internal call sequence — what is observably true, not how you
-  would go about showing it.
+- **Only what and why.** The capability says what ability or externally meaningful
+  quality must exist; `so that` says why it is valuable. Neither clause describes
+  how to build, expose, store, constrain, or test it.
+- **Abstract away the solution.** Do not name technologies, libraries, protocols,
+  algorithms, components, services, endpoints, database or data structures,
+  internal events or call sequences, UI controls, file layouts, test fixtures, or
+  deployment topology. Those belong in design documents, plans, and code.
+- **Keep proof elsewhere.** Limits, thresholds, windows, edge cases, refused
+  cases, and acceptance procedures belong in acceptance criteria, specifications,
+  or tests—not in the requirement line. A requirement is stable intent, not a
+  compressed test case.
+- **Ask two questions.** What must someone be able to do? Why is that valuable?
+  If text answers how, how much, how fast, under which edge case, or how to prove
+  it, move that text out of the requirement.
+- **Implementation independence.** Could materially different implementations
+  satisfy this line unchanged? If not, raise the wording one level.
 
 ## Structure
 
@@ -200,9 +202,12 @@ Authoring rules and review are one list. To review, check each and report
 - Under a role heading, lines start with a verb, not "I can".
 - If a `roles` map is present, its keys are bare role names, each matching an `As a
   <role>` heading, and every role a heading uses is defined there.
-- The capability is observable and states its own limits — a failing test could
-  be written from the line — and no line carries a legacy `; verified when `
-  clause.
+- The capability states an ability, not its limits or proof, and no line carries a
+  legacy `; verified when ` clause.
+- The capability and value state only **what** must be possible and **why** it
+  matters. They prescribe no technology, protocol, component, endpoint, storage
+  model, algorithm, UI control, internal sequence, test method, or deployment
+  choice; a materially different implementation could satisfy the same line.
 - IDs are `PREFIX-NN`, stable, and unique across the file.
 - Group keys are `snake_case`; top-level sections are `functional`,
   `non_functional`, `deferred`, `docs`, plus any domain sections already in the
@@ -267,12 +272,12 @@ the release tag matching this skill's version:
 
 - `requirements.template.yaml` — a ready-to-copy starter; save it as your
   project's `requirements.yaml` and keep its header.
-  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.7.0/requirements.template.yaml`
+  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.8.0/requirements.template.yaml`
 - `requirements.schema.json` — optional editor aid (autocomplete + hover). It
   mirrors the structural shape (key and ID patterns, nesting); this skill stays
   authoritative for grammar and conventions. The template's `$schema` field
   points at it once both sit in your repo.
-  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.7.0/requirements.schema.json`
+  `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.8.0/requirements.schema.json`
 - `scripts/check.mjs` — the read-only sensor (see **Checking**); it ships inside
   this skill, so it needs no vendoring — run it with node.
 
@@ -287,7 +292,9 @@ distributed via `npx skills`. A `requirements.yaml` carries no version — only 
 (`npx skills update`); if the grammar changed, migrate the file in place.
 
 **0.7 dropped the `verified when` clause.** A line is now `<ID>: <observable
-capability>; so that <value>.` To migrate, fold each old proof into its
-capability — the window, threshold, or refused case it named belongs there;
-whatever is left describes a test method and is dropped, not relocated. The
-sensor's `LEGACY-VERIFIED-WHEN` finding lists the lines still to convert.
+capability>; so that <value>.`
+
+**0.8 separates requirements from acceptance criteria.** To migrate, reduce each
+capability to the ability itself. Move its limits, thresholds, edge cases, and
+proof details to the project's acceptance criteria, specifications, or tests.
+The requirement retains only what must be possible and why it is valuable.

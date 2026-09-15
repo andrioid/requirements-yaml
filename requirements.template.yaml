@@ -21,20 +21,20 @@ roles:
 functional:
   accounts:
     As a user, I can:
-      ACC-01: reset my password from a signed email link that works once and then expires; so that a lost password is recoverable without contacting support.
-      ACC-02: sign in with a one-time code that expires after a short window; so that I do not have to remember a password.
+      ACC-01: regain account access after losing my sign-in credential; so that I can recover without contacting support.
+      ACC-02: sign in without remembering a reusable secret; so that I can avoid relying on a password.
     As an admin, I can:
-      ACC-03: revoke another user's active sessions, leaving their next request unauthenticated; so that a compromised account can be locked out immediately.
+      ACC-03: revoke another user's access; so that I can protect a compromised account.
 
 non_functional:
   security:
-    SEC-01: public endpoints are rate-limited, throttling repeated requests from one source; so that credential stuffing and abuse are constrained.
+    SEC-01: public access resists automated abuse; so that accounts and service availability are protected.
   performance:
-    PERF-01: list views respond within a p95 budget of 300 ms at expected load; so that the app stays usable at scale.
+    PERF-01: list views remain responsive as usage grows; so that the app stays usable at scale.
 
 deferred:
   payments:
-    "[deferred] PAY-01": users can pay online through a hosted checkout that settles funds without the platform holding a balance; so that paid plans are possible later.
+    "[deferred] PAY-01": users can pay online without the platform holding their balance; so that paid plans are possible later.
 
 # docs is optional — supporting documents and when to read them, kept at the end.
 docs:
