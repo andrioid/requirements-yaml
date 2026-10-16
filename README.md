@@ -21,7 +21,8 @@ functional:
   project-specific domain sections.
 - Optional `goals` and `non_goals` lists at the top set the project's vision and
   its boundaries — plain one-liners, not requirements (`non_goals` is *not ever*,
-  distinct from `deferred`'s *not yet*).
+  distinct from `deferred`'s *not yet*). Only the human sets them; an agent
+  records an entry only when the human dictates it.
 - An optional `roles` map defines the actors named in `As a <role>` headings —
   each role mapped to a one-line description of who they are and their authority.
 - An optional top-level `docs` map lists supporting material by filename
@@ -68,10 +69,12 @@ It reports where the file and the code disagree; it never edits either.
 ## Start
 
 1. Install the skills (above).
-2. Copy `requirements.template.yaml` into your repo as `requirements.yaml`, then
-   edit the header and examples. To vendor it straight from a release:
+2. Copy `requirements.template.yaml` into your repo as `requirements.yaml`, keep
+   the header, and replace the examples with your own — write your `goals` and
+   `non_goals` yourself, or ask your agent to set up a new project and it will
+   ask you for them. To vendor it straight from a release:
    ```
-   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.9.0/requirements.template.yaml
+   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.9.1/requirements.template.yaml
    ```
 3. (Optional) vendor `requirements.schema.json` beside it for editor autocomplete
    — the template's `$schema` field already points at it.

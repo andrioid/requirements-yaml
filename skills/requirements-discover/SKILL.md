@@ -1,7 +1,7 @@
 ---
 name: requirements-discover
-description: Reverse-engineer a requirements.yaml in the requirements-yaml format from an existing codebase — infer observable capabilities from code and tests, mark assumed rationale with [?] as unconfirmed, and distil the project's goals and non-goals. Use when bootstrapping requirements for a codebase that has none, or reconciling a requirements file with what the code actually does.
-version: 0.6.0
+description: Reverse-engineer a requirements.yaml in the requirements-yaml format from an existing codebase — infer observable capabilities from code and tests and mark assumed rationale with [?] as unconfirmed; goals and non-goals stay the human's. Use when bootstrapping requirements for a codebase that has none, or reconciling a requirements file with what the code actually does.
+version: 0.6.1
 ---
 
 # requirements-discover
@@ -30,15 +30,13 @@ directly; `[?]` marks what the code cannot tell you.
    pagination, timeouts → `performance`. Scan middleware, config, and CI — these
    are the easiest to miss.
 4. **List existing docs** (glossary, domain model, API contract) in `docs`.
-5. **Goals and non-goals** — synthesize 3–7 `goals` from the README and recurring
-   `so that` themes, each `[?]`. Transcribe `non_goals` only from stated
-   boundaries (out-of-scope notes, rejected ADRs, `wontfix`); never infer one
-   from absence.
+5. **Leave `goals` and `non_goals` to the human** — never add them, not even from
+   the README or ADRs (format skill: **Goals and non-goals**).
 
 ## Rules
 
 - Ground every clause in something you read; the only sanctioned assumption is a
-  `[?]` `so that` or goal.
+  `so that` marked `[?]`.
 - Implementation details go in discovery notes, not the file.
 - Run the sensor: `DANGLING` IDs are likely missed requirements; the `[?]` tally
   shows how far the draft is from settled.

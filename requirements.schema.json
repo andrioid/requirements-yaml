@@ -9,13 +9,13 @@
   "properties": {
     "goals": {
       "type": "array",
-      "description": "Optional list of project goals — the vision the requirements serve. Free one-line statements, not requirements: no IDs, no clauses. Kept first by convention.",
+      "description": "Optional list of project goals — the vision the requirements serve. Set only by the human; agents record entries verbatim when dictated. Free one-line statements, not requirements: no IDs, no clauses. Kept first by convention.",
       "minItems": 1,
       "items": { "$ref": "#/$defs/statement" }
     },
     "non_goals": {
       "type": "array",
-      "description": "Optional list of non-goals — boundaries the project deliberately will not cross. Distinct from `deferred` (merely not-yet); a non-goal is not-ever. Free one-line statements, not requirements.",
+      "description": "Optional list of non-goals — boundaries the project deliberately will not cross. Set only by the human; agents record entries verbatim when dictated. Distinct from `deferred` (merely not-yet); a non-goal is not-ever. Free one-line statements, not requirements.",
       "minItems": 1,
       "items": { "$ref": "#/$defs/statement" }
     },
@@ -64,7 +64,7 @@
       "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
     },
     "statement": {
-      "description": "A free one-line goal or non-goal statement: a distilled direction or boundary, not a requirement — no ID, no `so that` clause. Quote it when it starts with `[?]` or another YAML indicator.",
+      "description": "A free one-line goal or non-goal statement: a distilled direction or boundary, not a requirement — no ID, no `so that` clause. Quote it when it starts with a YAML indicator.",
       "type": "string",
       "minLength": 1
     },

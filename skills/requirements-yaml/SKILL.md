@@ -1,7 +1,7 @@
 ---
 name: requirements-yaml
 description: Author, edit, and review a project's requirements.yaml in the compact requirements-yaml format — one line per requirement, grouped into functional / non_functional / deferred plus optional goals / non_goals lists, domain sections, and a docs map of supporting references. Use when creating or maintaining a requirements.yaml, adding or revising requirements, or checking that a requirements file follows the format.
-version: 0.9.0
+version: 0.9.1
 ---
 
 # requirements-yaml
@@ -18,7 +18,8 @@ not a gate — nothing enforces it; you do.
   building: apply it and call it out by ID in your reply or PR; review happens
   at commit.
 - **Never** weaken or remove a requirement to make code pass.
-- **Never** change `goals` / `non_goals` unless asked.
+- **Never** write, infer, or reword `goals` / `non_goals` — see **Goals and
+  non-goals**.
 
 A project's AGENTS.md may tighten this.
 
@@ -78,9 +79,14 @@ docs:                           # optional; last — filename -> when to read it
 
 ## Goals and non-goals
 
-Plain one-line YAML list items — no IDs, roles, or `so that`. `goals` are the
-vision the requirements serve; `non_goals` are boundaries the project will never
-cross. `non_goals` is *not ever*; `deferred` is *not yet*.
+Plain one-line YAML list items — no IDs, roles, `so that`, or `[?]`. `goals` are
+the vision the requirements serve; `non_goals` are boundaries the project will
+never cross. `non_goals` is *not ever*; `deferred` is *not yet*.
+
+Both belong to the human — they are how the human steers the project. An agent
+never writes, infers, or rewords an entry. It records one only when the human
+dictates it, word for word, and suggests candidates only when the human asks — in
+conversation, never in the file. With none dictated, the section stays absent.
 
 ## Roles
 
@@ -108,14 +114,13 @@ coverage.
 
 ## `[?]` — unconfirmed
 
-`[?]` right after a clause keyword, or leading a goal, marks it as assumed:
+`[?]` right after a clause keyword marks the clause as assumed:
 
 ```
 BIL-01: charge a saved card on renewal; so that [?] subscriptions continue without re-entry.
 ```
 
-Quote a list item it leads (`- "[?] …"`). Expected in discovered drafts; a
-settled file has none left.
+Expected in discovered drafts; a settled file has none left.
 
 ## Checking (the sensor)
 
@@ -148,12 +153,31 @@ It checks shape, not quality; without node or git, use `git grep <ID>`.
 
 Vendor these into the repo root from the tag matching this skill's version:
 
-- `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.9.0/requirements.template.yaml`
+- `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.9.1/requirements.template.yaml`
   — save as `requirements.yaml`, keep its header.
-- `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.9.0/requirements.schema.json`
+- `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.9.1/requirements.schema.json`
   — optional editor aid for structure only; this skill stays authoritative.
 
 Offline, the Structure skeleton above is enough to hand-build a starter.
+
+### New project
+
+1. Vendor the template, keep its header comment (through the `$schema` line), and
+   delete every example entry — none of them are yours, including the example
+   `goals` and `non_goals`.
+2. Draft from what the user gave (pitch, README, conversation); ask only for gaps.
+   Fill in this order:
+   - `goals` / `non_goals` — ask the human; record only what they dictate.
+   - `roles` — only if actors differ in authority.
+   - `functional` areas — `snake_case`, one prefix each (`accounts` → `ACC`), from `01`.
+   - Requirements per area. Rationale the user stated is settled; rationale you
+     supplied gets `[?]`.
+   - `non_functional` — ask about security, performance, and privacy; they are
+     the easiest to miss.
+   - `deferred` — whatever the user called "later".
+   - `docs` — only documents that exist.
+3. Run the sensor. Every ID will be `UNCOVERED`; that is the build worklist for
+   **requirements-implement**.
 
 ## Versioning
 

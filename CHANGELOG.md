@@ -3,6 +3,19 @@
 Tags track the `requirements-yaml` skill version; workflow skills version
 independently.
 
+## v0.9.1
+
+- **`goals` and `non_goals` belong to the human.** Agents never write, infer, or
+  reword them; they record an entry only when the human dictates it, word for
+  word, and suggest candidates only when asked — in conversation, never in the
+  file. Neither list carries `[?]`.
+- `requirements-discover` 0.6.1 no longer synthesizes goals or transcribes
+  non-goals from the README or ADRs.
+- New-project steps in the format skill's Scaffolding section: clear the
+  template's examples, ask the human for goals, then fill roles, areas,
+  requirements, `non_functional`, `deferred`, and `docs`.
+- README, template header, and schema descriptions state the ownership rule.
+
 ## v0.9.0
 
 - **Looser approval.** Mechanical and requested edits to `requirements.yaml` are
