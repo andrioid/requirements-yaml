@@ -273,7 +273,7 @@ function main() {
     }
   }
   if (unresolvedLabels.length)
-    console.log(`\nunresolved [?] (confirm with a human): ${unresolvedLabels.join(", ")}`);
+    console.log(`\nunresolved [?] (unconfirmed): ${unresolvedLabels.join(", ")}`);
 
   console.log(`\nsummary: ${counts.integrity} integrity, ${counts.grammar} grammar, ${counts.coverage} coverage`);
   process.exit(exit);

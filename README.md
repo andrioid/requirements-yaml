@@ -29,8 +29,8 @@ functional:
   when to read it.
 - Quotes are optional — add them only if a clause contains `: ` or the value
   starts with a YAML symbol.
-- The file is human-owned: an agent proposes edits and a human approves them —
-  `requirements.yaml` is never rewritten unilaterally.
+- Agents apply mechanical and requested edits directly and call out any other
+  change to meaning for review; they never weaken a requirement to make code pass.
 
 ## The format
 
@@ -71,7 +71,7 @@ It reports where the file and the code disagree; it never edits either.
 2. Copy `requirements.template.yaml` into your repo as `requirements.yaml`, then
    edit the header and examples. To vendor it straight from a release:
    ```
-   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.8.0/requirements.template.yaml
+   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.9.0/requirements.template.yaml
    ```
 3. (Optional) vendor `requirements.schema.json` beside it for editor autocomplete
    — the template's `$schema` field already points at it.

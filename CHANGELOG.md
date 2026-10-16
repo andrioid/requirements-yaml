@@ -3,6 +3,19 @@
 Tags track the `requirements-yaml` skill version; workflow skills version
 independently.
 
+## v0.9.0
+
+- **Looser approval.** Mechanical and requested edits to `requirements.yaml` are
+  applied directly; unrequested changes to meaning are applied and called out by
+  ID for review at commit. Fixed rules: never weaken or remove a requirement to
+  make code pass; change `goals`/`non_goals` only when asked. AGENTS.md may
+  tighten this.
+- `requirements-discover` 0.6.0 writes the file directly; `[?]` marks what is
+  unconfirmed. `requirements-implement` 0.6.0 follows the new change rule.
+- Skills condensed: each rule stated once in the format skill; the review
+  checklist replaced by the sensor table; migration notes live here.
+- Sensor labels unresolved `[?]` as "unconfirmed".
+
 ## v0.8.0
 
 - Requirements now explicitly contain only the **what** (ability) and **why**
@@ -15,6 +28,9 @@ independently.
   capabilities.
 - `requirements-implement` and `requirements-discover` 0.5.0 preserve the
   ability/design boundary in their workflows.
+
+Migrate by reducing each capability to the ability itself; move limits,
+thresholds, edge cases, and proof to acceptance criteria, specs, or tests.
 
 ## v0.7.0
 
