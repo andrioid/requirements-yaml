@@ -74,9 +74,9 @@
       "pattern": "^As .+, I can$"
     },
     "roleName": {
-      "description": "A role name matching the token used in a functional role heading — the noun after `As a`/`As an` and before `, I can` (e.g. `user`, `admin`, `first-time visitor`). Lowercase words, optionally hyphen- or space-separated.",
+      "description": "A role name matching the token used in a functional role heading — the noun after `As a`/`As an` and before `, I can` (e.g. `user`, `admin`, `first-time visitor`, `company_admin`). Lowercase words, optionally separated by spaces, hyphens, or underscores.",
       "type": "string",
-      "pattern": "^[a-z][a-z0-9]*(?:[ -][a-z0-9]+)*$"
+      "pattern": "^[a-z][a-z0-9]*(?:[ _-][a-z0-9]+)*$"
     },
     "roleDescription": {
       "description": "One line describing who a role is and the authority they hold — not a requirement: no ID, no clauses.",
