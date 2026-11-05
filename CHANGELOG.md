@@ -3,7 +3,7 @@
 Tags track the `requirements-yaml` skill version; workflow skills version
 independently.
 
-## Unreleased
+## v0.9.2
 
 - **Coverage is scoped to the requirements file's directory.** The sensor used
   to scan the whole git repository, so in a monorepo another project's citations

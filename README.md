@@ -74,7 +74,7 @@ It reports where the file and the code disagree; it never edits either.
    `non_goals` yourself, or ask your agent to set up a new project and it will
    ask you for them. To vendor it straight from a release:
    ```
-   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.9.1/requirements.template.yaml
+   curl -O https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.9.2/requirements.template.yaml
    ```
 3. (Optional) vendor `requirements.schema.json` beside it for editor autocomplete
    — the template's `$schema` field already points at it.
