@@ -15,12 +15,12 @@ import { dirname, resolve, basename } from "node:path";
 
 const ID = "[A-Z][A-Z0-9]*-[0-9]{2,}";
 const ID_RE = new RegExp(`^${ID}$`);
-// A citation candidate: an ID plus at most one adjoining letter or digit on each
-// side. Only candidates that are exactly an ID count, so `DEL-552C` (a product
-// code) or `xACC-01` is not read as a citation of `DEL-552` / `ACC-01`.
-// Underscore and punctuation still delimit: `test_ACC-01` cites `ACC-01`.
-const CANDIDATE = `[A-Za-z0-9]?${ID}[A-Za-z0-9]?`;
-const CANDIDATE_RE = new RegExp(CANDIDATE, "g");
+// A citation candidate: an ID together with the whole run of letters and digits
+// around it. Only candidates that are exactly an ID count, so `DEL-552C` (a
+// product code), `xACC-01`, or `ACC-01ACC-02` cites nothing. Taking the whole run
+// keeps a later match from starting mid-token. Underscore and punctuation still
+// delimit: `test_ACC-01` cites `ACC-01`.
+const CANDIDATE = `[A-Za-z0-9]*${ID}[A-Za-z0-9]*`;
 // A requirement line: optional quote, optional [deferred] prefix, an ID, ": ", value.
 const REQ_LINE_RE = new RegExp(
   `^(\\s*)("?)(?:\\[deferred\\]\\s+)?(${ID})\\2:\\s?(.*)$`,
@@ -204,7 +204,8 @@ function coverage(reqs, filePath) {
   }
 
   const cited = new Set();
-  for (const m of out.matchAll(CANDIDATE_RE)) if (ID_RE.test(m[0])) cited.add(m[0]);
+  // -o prints one match per line
+  for (const tok of out.split("\n")) if (ID_RE.test(tok)) cited.add(tok);
 
   const declared = new Set(reqs.map((r) => r.id));
   const deferred = new Set(reqs.filter((r) => r.deferred).map((r) => r.id));
