@@ -1,7 +1,7 @@
 ---
 name: requirements-yaml
 description: Author, edit, and review a project's requirements.yaml in the compact requirements-yaml format — one line per requirement, grouped into functional / non_functional / deferred plus optional goals / non_goals lists, domain sections, and a docs map of supporting references. Use when creating or maintaining a requirements.yaml, adding or revising requirements, or checking that a requirements file follows the format.
-version: 0.9.2
+version: 0.9.3
 ---
 
 # requirements-yaml
@@ -157,9 +157,9 @@ It checks shape, not quality; without node or git, use `git grep <ID>`.
 
 Vendor these into the repo root from the tag matching this skill's version:
 
-- `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.9.2/requirements.template.yaml`
+- `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.9.3/requirements.template.yaml`
   — save as `requirements.yaml`, keep its header.
-- `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.9.2/requirements.schema.json`
+- `https://raw.githubusercontent.com/andrioid/requirements-yaml/v0.9.3/requirements.schema.json`
   — optional editor aid for structure only; this skill stays authoritative.
 
 Offline, the Structure skeleton above is enough to hand-build a starter.
