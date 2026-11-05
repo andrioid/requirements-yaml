@@ -142,7 +142,10 @@ node .claude/skills/requirements-yaml/scripts/check.mjs [requirements.yaml] [--j
 
 Coverage scans tracked and untracked files under the requirements file's
 directory (honoring `.gitignore`), excluding `*.md` — a prose mention proves
-nothing. The sensor also counts unresolved `[?]`.
+nothing. A citation is an exact ID: `DEL-552C` does not cite `DEL-552`. An
+ID-shaped code under one of your prefixes (an `INV-100` fixture when `INV` is a
+prefix) reads as `DANGLING`, so pick prefixes that don't collide with codes in
+the repo. The sensor also counts unresolved `[?]`.
 It checks shape, not quality; without node or git, use `git grep <ID>`.
 
 ## Companion skills
