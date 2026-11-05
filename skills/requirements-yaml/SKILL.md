@@ -140,8 +140,9 @@ node .claude/skills/requirements-yaml/scripts/check.mjs [requirements.yaml] [--j
 | `DANGLING` | coverage | ID cited in code but absent from the file. |
 | `DEFERRED-CITED` | coverage | A deferred ID is cited — it should not be built. |
 
-Coverage scans tracked and untracked files (honoring `.gitignore`), excluding
-`*.md` — a prose mention proves nothing. The sensor also counts unresolved `[?]`.
+Coverage scans tracked and untracked files under the requirements file's
+directory (honoring `.gitignore`), excluding `*.md` — a prose mention proves
+nothing. The sensor also counts unresolved `[?]`.
 It checks shape, not quality; without node or git, use `git grep <ID>`.
 
 ## Companion skills
