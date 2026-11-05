@@ -3,6 +3,18 @@
 Tags track the `requirements-yaml` skill version; workflow skills version
 independently.
 
+## v0.9.3
+
+- Schema: the `requirementText` description no longer calls the capability the
+  acceptance criterion (a v0.7.0 leftover); it now says to state the ability
+  only and keep limits, edge cases, and acceptance criteria in specs and tests.
+- Schema: `roleName` accepts underscores (`company_admin`), matching snake_case
+  area keys.
+- Sensor: a citation must be an exact ID. `DEL-552C` or `xDEL-10` no longer
+  counts as citing `DEL-552` / `DEL-10`, which previously hid `UNCOVERED`
+  requirements, and neither does `ACC-01ACC-02`. `test_ACC-01` still cites
+  `ACC-01`.
+
 ## v0.9.2
 
 - **Coverage is scoped to the requirements file's directory.** The sensor used
