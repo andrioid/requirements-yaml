@@ -15,7 +15,12 @@ import { dirname, resolve, basename } from "node:path";
 
 const ID = "[A-Z][A-Z0-9]*-[0-9]{2,}";
 const ID_RE = new RegExp(`^${ID}$`);
-const ID_TOKEN_RE = new RegExp(ID, "g");
+// A citation candidate: an ID plus at most one adjoining letter or digit on each
+// side. Only candidates that are exactly an ID count, so `DEL-552C` (a product
+// code) or `xACC-01` is not read as a citation of `DEL-552` / `ACC-01`.
+// Underscore and punctuation still delimit: `test_ACC-01` cites `ACC-01`.
+const CANDIDATE = `[A-Za-z0-9]?${ID}[A-Za-z0-9]?`;
+const CANDIDATE_RE = new RegExp(CANDIDATE, "g");
 // A requirement line: optional quote, optional [deferred] prefix, an ID, ": ", value.
 const REQ_LINE_RE = new RegExp(
   `^(\\s*)("?)(?:\\[deferred\\]\\s+)?(${ID})\\2:\\s?(.*)$`,
@@ -188,7 +193,7 @@ function coverage(reqs, filePath) {
   try {
     out = execFileSync(
       "git",
-      ["grep", "-I", "--untracked", "--no-color", "-hoE", ID, "--", ".", `:(exclude)${basename(abs)}`, ":(exclude)*.md"],
+      ["grep", "-I", "--untracked", "--no-color", "-hoE", CANDIDATE, "--", ".", `:(exclude)${basename(abs)}`, ":(exclude)*.md"],
       { cwd, encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] },
     );
   } catch (e) {
@@ -199,7 +204,7 @@ function coverage(reqs, filePath) {
   }
 
   const cited = new Set();
-  for (const m of out.matchAll(ID_TOKEN_RE)) cited.add(m[0]);
+  for (const m of out.matchAll(CANDIDATE_RE)) if (ID_RE.test(m[0])) cited.add(m[0]);
 
   const declared = new Set(reqs.map((r) => r.id));
   const deferred = new Set(reqs.filter((r) => r.deferred).map((r) => r.id));
