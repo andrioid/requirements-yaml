@@ -3,6 +3,13 @@
 Tags track the `requirements-yaml` skill version; workflow skills version
 independently.
 
+## Unreleased
+
+- **Coverage is scoped to the requirements file's directory.** The sensor used
+  to scan the whole git repository, so in a monorepo another project's citations
+  counted as coverage. A file at the repo root behaves as before; a file in a
+  subdirectory no longer sees code outside that directory.
+
 ## v0.9.1
 
 - **`goals` and `non_goals` belong to the human.** Agents never write, infer, or

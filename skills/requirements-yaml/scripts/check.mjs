@@ -11,7 +11,7 @@
 
 import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
-import { dirname, relative, resolve, basename } from "node:path";
+import { dirname, resolve, basename } from "node:path";
 
 const ID = "[A-Z][A-Z0-9]*-[0-9]{2,}";
 const ID_RE = new RegExp(`^${ID}$`);
@@ -173,23 +173,23 @@ function roleFindings(roleDefs, usedRoles) {
 function coverage(reqs, filePath) {
   const abs = resolve(filePath);
   const cwd = dirname(abs);
-  let top;
   try {
-    top = execFileSync("git", ["rev-parse", "--show-toplevel"], { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }).trim();
+    execFileSync("git", ["rev-parse", "--git-dir"], { cwd, stdio: ["ignore", "ignore", "ignore"] });
   } catch {
     return { ran: false, reason: "not a git repository (skipped coverage)", findings: [] };
   }
 
-  const relFile = relative(top, abs) || basename(abs);
   let out = "";
+  // Scan from the file's own directory, not the git toplevel: in a monorepo each
+  // project's requirements.yaml must not be covered by another project's citations.
   // --untracked so a just-written (unstaged) test counts under TDD — still honors
   // .gitignore, so dist/ and node_modules/ stay out. Exclude *.md so coverage means a
   // test or code citation, not a prose/plan/doc mention (which proves nothing).
   try {
     out = execFileSync(
       "git",
-      ["grep", "-I", "--untracked", "--no-color", "-hoE", ID, "--", ".", `:(exclude)${relFile}`, ":(exclude)*.md"],
-      { cwd: top, encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] },
+      ["grep", "-I", "--untracked", "--no-color", "-hoE", ID, "--", ".", `:(exclude)${basename(abs)}`, ":(exclude)*.md"],
+      { cwd, encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] },
     );
   } catch (e) {
     // git grep exits 1 when there are no matches — that is a clean empty result
